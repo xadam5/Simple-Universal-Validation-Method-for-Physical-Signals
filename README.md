@@ -7,6 +7,7 @@ Implemented:
 
 To implement:
 - output flag
+- failure counter
 - loading tuned parameters
 - cmake project
 - TEST TEST TEST
