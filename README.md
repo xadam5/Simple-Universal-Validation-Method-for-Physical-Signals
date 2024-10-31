@@ -5,6 +5,9 @@ Implemented:
 - sliding window method
 - automatic tuning of parameters
 
+In progress:
+- validation handle
+
 To implement:
 - output flag
 - failure counter
