@@ -13,7 +13,7 @@ float calculate_mse(const std::vector<float> &actual, const std::vector<float> &
 }
 
 // Function to find the optimal alpha and beta by testing different combinations
-smoothing_param tune_smooth_param(const std::vector<float> &training_data) {
+SmoothingParameters tune_smooth_param(const std::vector<float> &training_data) {
     float best_mse = std::numeric_limits<float>::max();
     float best_alpha, best_beta;
     std::vector<float> predictions;
@@ -49,13 +49,13 @@ smoothing_param tune_smooth_param(const std::vector<float> &training_data) {
         }
     }
 
-    return smoothing_param(best_alpha, best_beta);
+    return SmoothingParameters(best_alpha, best_beta);
 }
 
-window_param tune_window_param(const std::vector<float> &training_data, smoothing_param smooth_param) {
+WindowParameters tune_window_param(const std::vector<float> &training_data, SmoothingParameters smooth_param) {
     size_t window_size = 20;
     float tolerance = 0.4;
-    window_param best_params(0, std::numeric_limits<float>::max(), 0, 0);
+    WindowParameters best_params(0, std::numeric_limits<float>::max(), 0, 0);
     HoltLinearModel smooth_model = HoltLinearModel(smooth_param.alpha, smooth_param.beta);
     int i = 0;
     while (smooth_model.isInitializing()) {
@@ -105,8 +105,8 @@ window_param tune_window_param(const std::vector<float> &training_data, smoothin
     return best_params;
 }
 
-model_param find_optimal_param(const std::vector<float> &training_data) {
-    smoothing_param smooth_model = tune_smooth_param(training_data);
-    window_param window_model = tune_window_param(training_data, smooth_model);
-    return model_param(smooth_model, window_model);
+ModelParameters find_optimal_param(const std::vector<float> &training_data) {
+    SmoothingParameters smooth_model = tune_smooth_param(training_data);
+    WindowParameters window_model = tune_window_param(training_data, smooth_model);
+    return ModelParameters(smooth_model, window_model);
 }
