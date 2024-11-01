@@ -2,26 +2,26 @@
 #define AUTO_TUNER_H
 
 #include <limits>
-#include "../expon_sm/exponential_smooth.h"
-#include "../sliding_wind/sliding_window.h"
+#include "exponential_smooth.h"
+#include "sliding_window.h"
 
-struct smoothing_param {
+struct SmoothingParameters {
     float alpha;
     float beta;
 };
 
-struct window_param {
+struct WindowParameters {
     float min_sd;
     float max_sd;
     float threshold;
     int window_size;
 };
 
-struct model_param {
-    smoothing_param smooth_model;
-    window_param window_model;
+struct ModelParameters {
+    SmoothingParameters smooth_param;
+    WindowParameters window_param;
 };
 
-model_param find_optimal_param(const std::vector<float> &training_data);
+ModelParameters find_optimal_param(const std::vector<float> &training_data);
 
 #endif
