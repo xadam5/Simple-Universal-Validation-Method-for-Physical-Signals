@@ -7,7 +7,7 @@
 
 class SlidingWindow {
 public:
-    SlidingWindow(const size_t window_size, const float threshold);
+    SlidingWindow(size_t window_size, float threshold);
     float mean();
     float standard_deviation();
     void update(float value);
@@ -15,8 +15,8 @@ public:
     bool isInitializing();
 
 private:
-    const size_t window_size;
-    const float threshold;
+    size_t window_size;
+    float threshold;
     std::deque<float> window;
 };
 

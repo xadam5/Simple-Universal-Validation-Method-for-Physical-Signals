@@ -5,7 +5,7 @@
 #include <tuple>
 #include "sliding_window.h"
 
-SlidingWindow::SlidingWindow(const size_t window_size, const float threshold)
+SlidingWindow::SlidingWindow(size_t window_size, float threshold)
     : window_size(window_size), threshold(threshold), window() {}
 
 float SlidingWindow::mean() {
