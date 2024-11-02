@@ -64,47 +64,6 @@ bool HoltLinearModel::isInitializing() {
     return !initialized;
 }
 
-// Function to calculate Mean Square Error (MSE)
-float calculate_mse(const std::vector<float> &actual, const std::vector<float> &predicted) {
-    float error_sum = 0.0;
-    for (size_t i = 0; i < actual.size(); ++i) {
-        error_sum += (actual[i] - predicted[i]) * (actual[i] - predicted[i]);
-    }
-    return error_sum / actual.size();
-}
-
-// Function to find the optimal alpha and beta by testing different combinations
-void find_optimal_parameters(const std::vector<float> &sensor_data, float &best_alpha, float &best_beta) {
-    float best_mse = std::numeric_limits<float>::max();  // Start with a large error value
-    std::vector<float> predictions;
-
-    for (float alpha = 0.1; alpha <= 0.9; alpha += 0.05) {
-        for (float beta = 0.1; beta <= 0.9; beta += 0.05) {
-            HoltLinearModel model(alpha, beta);
-            size_t i = 0;
-            while (model.isInitializing())
-            {
-                model.initialize(sensor_data[i]);
-                i++;
-            }
-
-            predictions.clear();
-
-            // Simulate real-time updates with predictions
-            for (; i < sensor_data.size(); ++i) {
-                model.update(sensor_data[i]);
-                float prediction = model.forecast();
-                predictions.push_back(prediction);
-            }
-
-            // Calculate MAE for the current alpha-beta combination
-            float mse = calculate_mse(std::vector<float>(sensor_data.begin() + 11, sensor_data.end()), predictions);
-
-            if (mse < best_mse) {
-                best_mse = mse;
-                best_alpha = alpha;
-                best_beta = beta;
-            }
-        }
-    }
+float HoltLinearModel::get_level() {
+    return level;
 }

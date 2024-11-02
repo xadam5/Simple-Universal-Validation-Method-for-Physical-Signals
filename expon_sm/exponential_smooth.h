@@ -10,6 +10,7 @@ public:
     void update(float new_value);
     float forecast();
     bool isInitializing();
+    float get_level();
 
 private:
     float alpha;
