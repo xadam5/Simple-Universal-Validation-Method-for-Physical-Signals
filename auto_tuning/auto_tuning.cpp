@@ -74,6 +74,7 @@ WindowParameters tune_window_param(const std::vector<float> &training_data, Smoo
     float min_sd = std::numeric_limits<float>::max();
     float max_sd = 0;
     float max_sd_from_me = 0;
+    float min_st_from_me = std::numeric_limits<float>::max();
 
     for (; i < training_data.size(); i++) {
         float prediction = smooth_model.forecast();
@@ -81,25 +82,21 @@ WindowParameters tune_window_param(const std::vector<float> &training_data, Smoo
         float difference = real_value - prediction;
         window_model.update(difference);
         float sd = window_model.standard_deviation();
-        if (sd > max_sd) {
-            max_sd = sd;
-        }
 
-        if (sd < min_sd) {
-            min_sd = sd;
-        }
+        max_sd = std::max(max_sd, sd);
+        min_sd = std::min(min_sd, sd);
+
         float me = window_model.mean();
         float sd_from_me = std::abs(me - difference) / sd;
-        if (sd_from_me > max_sd_from_me) {
-            max_sd_from_me = sd_from_me;
-        }
+        max_sd_from_me = std::max(max_sd_from_me, sd_from_me);
+        min_st_from_me = std::min(min_st_from_me, sd_from_me);
 
         smooth_model.update(real_value);
     }
 
-    best_params.max_sd = max_sd * (1 + tolerance);
-    best_params.min_sd = std::max(min_sd - (min_sd * tolerance), float (0));
-    best_params.threshold = max_sd_from_me * (1 + tolerance);
+    best_params.max_sd = max_sd + tolerance * (max_sd - min_sd);
+    best_params.min_sd = std::max(min_sd - tolerance * (max_sd - min_sd), float (0));
+    best_params.threshold = max_sd_from_me + tolerance * (max_sd_from_me - min_st_from_me);
     best_params.window_size = window_size;
 
     return best_params;
