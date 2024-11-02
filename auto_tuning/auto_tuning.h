@@ -8,13 +8,13 @@
 struct SmoothingParameters {
     float alpha;
     float beta;
+    float max_change;
 };
 
 struct WindowParameters {
     float min_sd;
     float max_sd;
     float threshold;
-    int window_size;
 };
 
 struct ModelParameters {
@@ -22,6 +22,6 @@ struct ModelParameters {
     WindowParameters window_param;
 };
 
-ModelParameters find_optimal_param(const std::vector<float> &training_data);
+ModelParameters find_optimal_param(const std::vector<float> &training_data, size_t wintdo_size, float tolerance);
 
 #endif
