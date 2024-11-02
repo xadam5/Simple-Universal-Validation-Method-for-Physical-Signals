@@ -32,18 +32,14 @@ void SlidingWindow::update(float value) {
     window.push_back(value);
 }
 
-bool SlidingWindow::validate(float value) {
+bool SlidingWindow::isOutlier(float value) {
     if (window.size() < window_size) {
         return true;
     }
 
     float me = mean();
     float sd = standard_deviation();
-    if (std::abs(value) > me + threshold * sd) {
-        std::cout << "Difference: " << value << "     Mean of window: " << me << "    St. d.: " << sd;
-        return false;
-    }
-    return true;
+    return std::abs(value) <= me + threshold * sd;
 }
 
 bool SlidingWindow::isInitializing() {

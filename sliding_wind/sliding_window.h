@@ -11,7 +11,7 @@ public:
     float mean();
     float standard_deviation();
     void update(float value);
-    bool validate(float value);
+    bool isOutlier(float value);
     bool isInitializing();
 
 private:
