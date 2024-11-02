@@ -5,7 +5,8 @@
 #include <vector>
 #include <tuple>
 
-class SlidingWindow {
+class SlidingWindow
+{
 public:
     SlidingWindow(size_t window_size, float threshold);
     float mean();

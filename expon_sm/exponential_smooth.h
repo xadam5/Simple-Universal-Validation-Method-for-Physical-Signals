@@ -3,7 +3,8 @@
 
 #include <vector>
 
-class HoltLinearModel {
+class HoltLinearModel
+{
 public:
     HoltLinearModel(float alpha, float beta);
     void initialize(float value);

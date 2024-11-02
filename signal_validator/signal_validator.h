@@ -5,7 +5,8 @@
 #include "../expon_sm/exponential_smooth.h"
 #include "../sliding_wind/sliding_window.h"
 
-enum ValidationStatus {
+enum ValidationStatus
+{
     VALID = 0b0,
     OUT_OF_BOUNDS = 0b1,
     OUTLIER = 0b10,
@@ -14,7 +15,8 @@ enum ValidationStatus {
     RAPID_CHANGE = 0b10000
 };
 
-class SignalValidator {
+class SignalValidator
+{
 public:
     SignalValidator(size_t window_size, float tolerance, std::vector<float> &training_data);
     SignalValidator(size_t window_size, float tolerance, float alpha, float beta, const float threshold);

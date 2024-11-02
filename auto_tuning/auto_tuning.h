@@ -5,19 +5,22 @@
 #include "exponential_smooth.h"
 #include "sliding_window.h"
 
-struct SmoothingParameters {
+struct SmoothingParameters
+{
     float alpha;
     float beta;
     float max_change;
 };
 
-struct WindowParameters {
+struct WindowParameters
+{
     float min_sd;
     float max_sd;
     float threshold;
 };
 
-struct ModelParameters {
+struct ModelParameters
+{
     SmoothingParameters smooth_param;
     WindowParameters window_param;
 };
