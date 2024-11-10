@@ -2,6 +2,7 @@
 #include <vector>
 #include <cmath>
 #include <limits>
+#include <algorithm>
 #include "exponential_smooth.h"
 
 HoltLinearModel::HoltLinearModel(float alpha, float beta)

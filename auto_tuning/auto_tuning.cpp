@@ -59,12 +59,12 @@ SmoothingParameters tune_smooth_param(const std::vector<float> &training_data)
         }
     }
 
-    return SmoothingParameters(best_alpha, best_beta, best_max_change);
+    return SmoothingParameters({best_alpha, best_beta, best_max_change});
 }
 
 WindowParameters tune_window_param(const std::vector<float> &training_data, size_t window_size, float tolerance, SmoothingParameters smooth_param)
 {
-    WindowParameters best_params(0, std::numeric_limits<float>::max(), 0);
+    WindowParameters best_params({0, std::numeric_limits<float>::max(), 0});
     HoltLinearModel smooth_model = HoltLinearModel(smooth_param.alpha, smooth_param.beta);
     int i = 0;
     while (smooth_model.isInitializing())
@@ -113,9 +113,9 @@ WindowParameters tune_window_param(const std::vector<float> &training_data, size
     return best_params;
 }
 
-ModelParameters find_optimal_param(const std::vector<float> &training_data, size_t window_size, float tolerance)
+ModelParameters find_optimal_param(std::vector<float> &training_data, size_t window_size, float tolerance)
 {
     SmoothingParameters smooth_model = tune_smooth_param(training_data);
     WindowParameters window_model = tune_window_param(training_data, window_size, tolerance, smooth_model);
-    return ModelParameters(smooth_model, window_model);
+    return ModelParameters({smooth_model, window_model});
 }

@@ -2,8 +2,8 @@
 #define AUTO_TUNER_H
 
 #include <limits>
-#include "exponential_smooth.h"
-#include "sliding_window.h"
+#include "../expon_sm/exponential_smooth.h"
+#include "../sliding_wind/sliding_window.h"
 
 struct SmoothingParameters
 {
@@ -25,6 +25,6 @@ struct ModelParameters
     WindowParameters window_param;
 };
 
-ModelParameters find_optimal_param(const std::vector<float> &training_data, size_t wintdo_size, float tolerance);
+ModelParameters find_optimal_param(std::vector<float> &training_data, size_t wintdo_size, float tolerance);
 
 #endif
