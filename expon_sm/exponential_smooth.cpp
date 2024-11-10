@@ -73,7 +73,7 @@ bool HoltLinearModel::isInitializing()
     return !initialized;
 }
 
-float HoltLinearModel::get_level()
+float HoltLinearModel::get_trend()
 {
-    return level;
+    return trend;
 }

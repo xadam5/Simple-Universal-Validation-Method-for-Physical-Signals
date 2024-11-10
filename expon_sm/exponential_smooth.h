@@ -11,7 +11,7 @@ public:
     void update(float new_value);
     float forecast();
     bool isInitializing();
-    float get_level();
+    float get_trend();
 
 private:
     float alpha;
