@@ -5,28 +5,38 @@
 #include <tuple>
 #include "sliding_window.h"
 
-SlidingWindow::SlidingWindow(size_t window_size, float threshold)
-    : window_size(window_size), threshold(threshold), window() {}
+SlidingWindow::SlidingWindow(size_t window_size)
+    : window_size(window_size), window(), me(0), sd(0) {}
 
-float SlidingWindow::mean()
+float SlidingWindow::get_me()
+{
+    return me;
+}
+
+float SlidingWindow::get_sd()
+{
+    return sd;
+}
+
+void SlidingWindow::update_me()
 {
     float window_sum = 0;
     for (float val : window)
     {
         window_sum += val;
     }
-    return window_sum / window.size();
+    me = window_sum / window.size();
 }
 
-float SlidingWindow::standard_deviation()
+void SlidingWindow::update_sd()
 {
-    float me = mean();
+    float me = get_me();
     float var = 0;
     for (float val : window)
     {
         var += (val - me) * (val - me);
     }
-    return std::sqrt(var / window.size());
+    sd = std::sqrt(var / window.size());
 }
 
 void SlidingWindow::update(float value)
@@ -36,18 +46,8 @@ void SlidingWindow::update(float value)
         window.pop_front();
     }
     window.push_back(value);
-}
-
-bool SlidingWindow::isOutlier(float value)
-{
-    if (window.size() < window_size)
-    {
-        return true;
-    }
-
-    float me = mean();
-    float sd = standard_deviation();
-    return std::abs(value) <= me + threshold * sd;
+    update_me();
+    update_sd();
 }
 
 bool SlidingWindow::isInitializing()
