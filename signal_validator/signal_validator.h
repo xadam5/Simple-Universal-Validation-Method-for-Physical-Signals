@@ -5,28 +5,67 @@
 #include "../expon_sm/exponential_smooth.h"
 #include "../sliding_wind/sliding_window.h"
 
+struct SmoothingParameters
+{
+    float alpha;
+    float beta;
+    float max_asc;
+    float max_des;
+};
+
+struct WindowParameters
+{
+    size_t window_size;
+    float min_sd;
+    float max_sd;
+    float threshold;
+};
+
+struct ValidatorParameters
+{
+    SmoothingParameters smooth_param;
+    WindowParameters window_param;
+    float range_l_limit;
+    float range_u_limit;
+    float continuity_threshold;
+};
+
 enum ValidationStatus
 {
     VALID = 0b0,
-    OUT_OF_BOUNDS = 0b1,
-    OUTLIER = 0b10,
+    OUT_OF_RANGE = 0b1,
+    NOT_CONTINUOUS = 0b10,
     STUCK = 0b100,
-    PRECISION_DEG = 0b1000,
-    RAPID_CHANGE = 0b10000
+    NOISY = 0b1000,
+    RAPID_INCREASE = 0b10000,
+    RAPID_DECREASE = 0b100000,
 };
 
 class SignalValidator
 {
 public:
-    SignalValidator(size_t window_size, float tolerance, float alpha, float beta, float threshold);
-    int validate(float value);
+    SignalValidator(ValidatorParameters param);
     void update(float new_value);
     float forecast();
+    int validate(float value);
 
 private:
     HoltLinearModel smooth_model;
     SlidingWindow window_model;
-    float tolerance;
+    float range_l_limit;
+    float range_u_limit;
+    float continuity_threshold;
+    float min_sd;
+    float max_sd;
+    float max_asc;
+    float max_des;
+
+    bool range_check(float value);
+    bool continuity_check(float value);
+    bool stuck_check();
+    bool noise_check();
+    bool increase_check();
+    bool decrease_check();
 };
 
 #endif
