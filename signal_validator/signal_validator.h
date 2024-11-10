@@ -18,7 +18,6 @@ enum ValidationStatus
 class SignalValidator
 {
 public:
-    SignalValidator(size_t window_size, float tolerance, std::vector<float> &training_data);
     SignalValidator(size_t window_size, float tolerance, float alpha, float beta, float threshold);
     int validate(float value);
     void update(float new_value);
