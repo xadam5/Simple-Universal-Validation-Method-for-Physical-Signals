@@ -1,13 +1,13 @@
-#include "validation_handler.h"
+#include "validator_handler.h"
 
-ValidationHandler::ValidationHandler(SignalValidator &validator, float trend_coeff, int window_size)
+ValidatorHandler::ValidatorHandler(SignalValidator &validator, float trend_coeff, int window_size)
     : validator(validator),
       not_cont_threshold(10 - (5 - (1 + trend_coeff) * 10)),
       variability_threshold(window_size / 2),
       rapid_change_threshold(10 - (5 - trend_coeff * 10))
 {}
 
-std::tuple<int, int> ValidationHandler::validate(float value)
+std::tuple<int, int> ValidatorHandler::validate(float value)
 {
     int status = validator.validate(value);
 
@@ -37,7 +37,7 @@ std::tuple<int, int> ValidationHandler::validate(float value)
     return std::make_tuple(output, failure_count);
 }
 
-void ValidationHandler::range_check(int status)
+void ValidatorHandler::range_check(int status)
 {
     if (status & OUT_OF_RANGE && !(status & NOT_CONTINUOUS))
     {
@@ -45,7 +45,7 @@ void ValidationHandler::range_check(int status)
     }
 }
 
-void ValidationHandler::not_cont_check(int status)
+void ValidatorHandler::not_cont_check(int status)
 {
     if ((status & NOT_CONTINUOUS && (status & RAPID_DECREASE || status & NOISY)))
     {
@@ -60,7 +60,7 @@ void ValidationHandler::not_cont_check(int status)
     }
 }
 
-void ValidationHandler::stuck_check(int status)
+void ValidatorHandler::stuck_check(int status)
 {
     status & STUCK ? stuck_count++ : stuck_count = 0;
 
@@ -70,7 +70,7 @@ void ValidationHandler::stuck_check(int status)
     }
 }
 
-void ValidationHandler::noisy_check(int status)
+void ValidatorHandler::noisy_check(int status)
 {
     status & NOISY ? noisy_count++ : noisy_count = 0;
 
@@ -80,7 +80,7 @@ void ValidationHandler::noisy_check(int status)
     }
 }
 
-void ValidationHandler::rapid_change_check(int status)
+void ValidatorHandler::rapid_change_check(int status)
 {
     status & RAPID_INCREASE || status & RAPID_DECREASE
         ? rapid_change_count++ : rapid_change_count = 0;
@@ -91,7 +91,7 @@ void ValidationHandler::rapid_change_check(int status)
     }
 }
 
-void ValidationHandler::update_failure_counter(bool is_failure)
+void ValidatorHandler::update_failure_counter(bool is_failure)
 {
     if (failures[99])
     {

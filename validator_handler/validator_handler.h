@@ -16,10 +16,10 @@ enum OutputStatusMask
 
 };
 
-class ValidationHandler
+class ValidatorHandler
 {
 public:
-    ValidationHandler(SignalValidator &validator, float trend_coeff, int window_size);
+    ValidatorHandler(SignalValidator &validator, float trend_coeff, int window_size);
     std::tuple<int, int> validate(float value);
 
 private:
