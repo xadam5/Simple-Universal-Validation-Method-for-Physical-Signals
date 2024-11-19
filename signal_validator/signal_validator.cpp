@@ -3,7 +3,6 @@
 #include <cmath>
 #include <limits>
 #include "signal_validator.h"
-#include "auto_tuning.h"
 
 SignalValidator::SignalValidator(ValidatorParameters param)
     : smooth_model(param.smooth_param.alpha, param.smooth_param.beta),
