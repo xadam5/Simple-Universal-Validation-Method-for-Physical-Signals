@@ -1,19 +1,10 @@
 #include <bitset>
 #include "../signal_validator/signal_validator.h"
 
-enum OutputStatusMask
+enum OutputStatus
 {
-    VALID           = 0b0,
     INVALID         = 0b100000000,
     LOST            = 0b10000000,
-    INITIALIZING    = 0b1000000,
-    OUT_OF_RANGE    = 0b100000,
-    NOT_CONTINUOUS  = 0b10000,
-    STUCK           = 0b1000,
-    NOISY           = 0b100,
-    RAPID_INCREASE  = 0b10,
-    RAPID_DECREASE  = 0b1,
-
 };
 
 class ValidatorHandler

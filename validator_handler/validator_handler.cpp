@@ -13,6 +13,7 @@ std::tuple<int, int> ValidatorHandler::validate(float value)
 
     if (status & INITIALIZING)
     {
+        validator.update(value);
         return std::make_tuple(INITIALIZING, 0);
     }
 
