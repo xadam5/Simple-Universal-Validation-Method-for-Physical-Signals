@@ -18,9 +18,34 @@ SignalValidator::SignalValidator(ValidatorParameters param)
 
 void SignalValidator::update(float new_value)
 {
+    if (is_initializing)
+    {
+        initialize(new_value);
+        return;
+    }
     float prediction = smooth_model.forecast();
     window_model.update(new_value - prediction);
     smooth_model.update(new_value);
+}
+
+void SignalValidator::initialize(float value)
+{
+    if (smooth_model.isInitializing())
+    {
+        smooth_model.initialize(value);
+        return;
+    }
+
+    if (window_model.isInitializing())
+    {
+        window_model.update(smooth_model.forecast() - value);
+        smooth_model.update(value);
+    }
+
+    if (!window_model.isInitializing())
+    {
+        is_initializing = false;
+    }
 }
 
 float SignalValidator::forecast()
@@ -30,6 +55,11 @@ float SignalValidator::forecast()
 
 int SignalValidator::validate(float value)
 {
+    if (is_initializing)
+    {
+        return INITIALIZING;
+    }
+
     int status = VALID;
 
     float prediction = smooth_model.forecast();
@@ -57,9 +87,15 @@ bool SignalValidator::range_check(float value)
 
 bool SignalValidator::continuity_check(float value)
 {
+    float me = window_model.get_me();
+    float sd = window_model.get_sd();
+    if (stuck_check())
+    {
+        sd = max_sd - min_sd;
+    }
     float prediction = smooth_model.forecast();
     float difference = value - prediction;
-    return (window_model.get_me() - difference) / window_model.get_sd() < continuity_threshold;
+    return std::abs((me - difference)) / sd < continuity_threshold;
 }
 
 bool SignalValidator::stuck_check()

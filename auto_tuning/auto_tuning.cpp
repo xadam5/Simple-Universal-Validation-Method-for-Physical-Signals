@@ -15,7 +15,7 @@ float calculate_mse(const std::vector<float> &actual, const std::vector<float> &
 }
 
 // Function to find the optimal alpha and beta by testing different combinations
-SmoothingParameters tune_smooth_param(const std::vector<float> &training_data)
+SmoothingParameters tune_smooth_param(std::vector<float> &training_data, float tolerance)
 {
     float best_mse = std::numeric_limits<float>::max();
     float best_alpha, best_beta, best_max_asc, best_max_des;
@@ -118,7 +118,7 @@ WindowParameters tune_window_param(std::vector<float> &training_data, size_t win
 
 ValidatorParameters find_optimal_param(std::vector<float> &training_data, size_t window_size, float tolerance)
 {
-    SmoothingParameters smooth_model = tune_smooth_param(training_data);
+    SmoothingParameters smooth_model = tune_smooth_param(training_data, tolerance);
     WindowParameters window_model = tune_window_param(training_data, window_size, tolerance, smooth_model);
     return ValidatorParameters({smooth_model, window_model});
 }
