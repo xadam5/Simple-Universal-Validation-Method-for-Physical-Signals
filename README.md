@@ -4,13 +4,15 @@ Implemented:
 - exponential smoothing method
 - sliding window method
 - automatic tuning of parameters
+- signal validator
+- validation handler
+- output flags
+- failure counter
 
 In progress:
-- validation handle
+-  
 
 To implement:
-- output flag
-- failure counter
 - loading tuned parameters
 - cmake project
 - TEST TEST TEST
