@@ -10,7 +10,7 @@ Implemented:
 - failure counter
 
 In progress:
--  
+-  runner function
 
 To implement:
 - loading tuned parameters
