@@ -9,7 +9,7 @@ SignalValidator::SignalValidator(ValidatorParameters param)
       window_model(param.window_param.window_size),
       range_l_limit(param.range_l_limit),
       range_u_limit(param.range_u_limit),
-      continuity_threshold(param.continuity_threshold),
+      continuity_threshold(param.window_param.threshold),
       min_sd(param.window_param.min_sd),
       max_sd(param.window_param.max_sd),
       max_asc(param.smooth_param.max_asc),
@@ -49,6 +49,11 @@ void SignalValidator::initialize(float value)
 
 float SignalValidator::forecast()
 {
+    if (is_initializing)
+    {
+        return std::numeric_limits<float>::quiet_NaN();
+    }
+
     return smooth_model.forecast();
 }
 

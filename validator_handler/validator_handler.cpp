@@ -34,6 +34,15 @@ std::tuple<int, int> ValidatorHandler::validate(float value)
         output |= LOST;
     }
 
+    if (status & NOT_CONTINUOUS)
+    {
+        validator.update(validator.forecast());
+    }
+    else
+    {
+        validator.update(value);
+    }
+
     update_failure_counter(status != VALID);
     return std::make_tuple(output, failure_count);
 }

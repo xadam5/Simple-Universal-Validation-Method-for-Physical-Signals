@@ -27,7 +27,6 @@ struct ValidatorParameters
     WindowParameters window_param;
     float range_l_limit;
     float range_u_limit;
-    float continuity_threshold;
 };
 
 enum ValidationStatus
