@@ -2,6 +2,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <tuple>
+#include <stdexcept>
+#include <limits>
 #include "../parse_parameters/parse_parameters.h"
 #include "../signal_validator/signal_validator.h"
 #include "../validator_handler/validator_handler.h"
@@ -118,5 +121,6 @@ int main(int argc, char *argv[])
         i++;
     }
     
+    validation_output.close();
     return 0;
 }
