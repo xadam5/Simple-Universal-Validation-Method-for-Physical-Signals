@@ -2,10 +2,12 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include "../parse_parameters/parse_parameters.h"
 #include "../signal_validator/signal_validator.h"
 #include "../validator_handler/validator_handler.h"
 #include "../auto_tuning/auto_tuning.h"
 #include "../data_manipulation/CSVReader.h"
+#include "../inih/cpp/INIReader.h"
 
 void print_params(ValidatorParameters params) {
     std::cout << "Alpha: " << params.smooth_param.alpha 
@@ -73,8 +75,15 @@ void write_validation_output(std::ofstream& output, int index, float measurement
     output << "\"," << failure_count << std::endl;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+    try {
+        SUVMParameters params = parse_args(argc, argv);
+    } catch (const std::invalid_argument &e) {
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
+
     auto training_file = "../sample_data/noise_change/normal_simulated_data.csv";
     auto test_file = "../sample_data/noise_change/noise_increase_data.csv";
     auto output_file = "simulations/validation_output_noise_change_2.csv";
