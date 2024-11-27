@@ -7,6 +7,16 @@
 #include <iostream>
 #include <fstream>
 
+// General template for other types (if needed)
+template <typename T>
+T get_param(const INIReader& reader, const std::string& section, const std::string& name, T default_value) {
+    T value = reader.Get(section, name, default_value);
+    if (value == default_value && reader.Get(section, name, "") == "") {
+        throw std::invalid_argument("Parameter " + section + "." + name + " must be provided");
+    }
+    return value;
+}
+
 template <>
 float get_param(const INIReader& reader, const std::string& section, const std::string& name, float default_value) {
     float value = reader.GetReal(section, name, default_value);
@@ -26,17 +36,7 @@ int get_param(const INIReader& reader, const std::string& section, const std::st
     return value;
 }
 
-// General template for other types (if needed)
-template <typename T>
-T get_param(const INIReader& reader, const std::string& section, const std::string& name, T default_value) {
-    T value = reader.Get(section, name, default_value);
-    if (value == default_value && reader.Get(section, name, "") == "") {
-        throw std::invalid_argument("Parameter " + section + "." + name + " must be provided");
-    }
-    return value;
-}
-
-ValidatorParameters load_configuration(const std::string& config_file) {
+ValidatorParameters load_config(const std::string& config_file) {
     INIReader reader(config_file);
     auto NONE = std::numeric_limits<float>::quiet_NaN();
 
@@ -60,7 +60,7 @@ ValidatorParameters load_configuration(const std::string& config_file) {
     return params;
 }
 
-void print_config(ValidatorParameters params, const std::string& config_file) {
+void generate_config(ValidatorParameters params, const std::string& config_file) {
     std::ofstream ini_file(config_file + ".ini");
     ini_file << "[exp_smoothing]" << std::endl;
     ini_file << "alpha = " << params.smooth_param.alpha << std::endl;

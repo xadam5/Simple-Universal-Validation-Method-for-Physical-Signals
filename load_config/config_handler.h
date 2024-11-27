@@ -5,7 +5,7 @@
 #include <string>
 
 
-ValidatorParameters load_configuration(const std::string& config_file);
-void print_config(ValidatorParameters params);
+ValidatorParameters load_config(const std::string& config_file);
+void generate_config(ValidatorParameters params, const std::string& config_file);
 
 #endif

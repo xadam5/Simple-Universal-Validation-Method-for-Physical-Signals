@@ -10,7 +10,7 @@
 #include "../validator_handler/validator_handler.h"
 #include "../auto_tuning/auto_tuning.h"
 #include "../data_manipulation/CSVReader.h"
-#include "../inih/cpp/INIReader.h"
+#include "../load_config/config_handler.h"
 
 void print_params(ValidatorParameters params) {
     std::cout << "Alpha: " << params.smooth_param.alpha 
@@ -67,8 +67,14 @@ std::vector<std::string> get_flags(int status) {
     return flags;
 }
 
-void write_validation_output(std::ofstream& output, int index, float measurement, float forecast, const std::vector<std::string>& flags, int failure_count) {
+void write_validation_output(std::ofstream& output, int index, float measurement, float forecast, int status, int failure_count, OutputFormat format) {
+    if (format == SHORT) {
+        output << index << "," << measurement << "," << status << "," << failure_count << std::endl;
+        return;
+    }
+
     output << index << "," << measurement << "," << forecast << ",\"";
+    std::vector<std::string> flags = get_flags(status);
     for (size_t i = 0; i < flags.size(); ++i) {
         output << flags[i];
         if (i < flags.size() - 1) {
@@ -88,26 +94,39 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    INIReader reader(params.config_file);
+    ValidatorParameters validator_params;
+    if (params.mode == TUNE) {
+        std::vector<float> tuning_data = readCSV(params.tuning_file);
+        TunnedParameters optimal_param = find_optimal_param(tuning_data, params.window_size, params.tolerance);
+        validator_params = {optimal_param.smooth_param,
+                            optimal_param.window_param,
+                            params.lower_limit,
+                            params.upper_limit};
 
-    auto training_file = "../sample_data/noise_change/normal_simulated_data.csv";
-    auto test_file = "../sample_data/noise_change/noise_increase_data.csv";
-    auto output_file = "simulations/validation_output_noise_change_2.csv";
+        generate_config(validator_params, params.output_file);
+        return 0;
+    }
 
-    std::vector<float> training_data = readCSV(training_file);
-    std::vector<float> test_data = readCSV(test_file);
+    if (params.mode == VALIDATE) {
+        validator_params = load_config(params.config_file);
+    }
 
-    size_t window_size = 20;
-    float tolerance = 0.6;
+    if (params.mode == TUNE_VALIDATE) {
+        std::vector<float> tuning_data = readCSV(params.tuning_file);
+        TunnedParameters optimal_param = find_optimal_param(tuning_data, params.window_size, params.tolerance);
+        validator_params = {optimal_param.smooth_param,
+                            optimal_param.window_param,
+                            params.lower_limit,
+                            params.upper_limit};
+    }
 
-    ValidatorParameters optimal_param = find_optimal_param(training_data, window_size, tolerance);
-    optimal_param.range_l_limit = -10;
-    optimal_param.range_u_limit = 20;
-    print_params(optimal_param);
+    print_params(validator_params);
 
-    SignalValidator validator(optimal_param);
-    ValidatorHandler handler(validator, optimal_param.smooth_param.beta, window_size);
-    std::ofstream validation_output(output_file);
+    SignalValidator validator(validator_params);
+    ValidatorHandler handler(validator, validator_params.smooth_param.beta, validator_params.window_param.window_size);
+
+    std::vector<float> test_data = readCSV(params.validation_file);
+    std::ofstream validation_output(params.output_file);
     validation_output << ",value,forecast,flags,failure_count" << std::endl;
     int i = 0;
     for (auto measurement : test_data)
@@ -116,8 +135,7 @@ int main(int argc, char *argv[])
         std::tuple<int, int> output = handler.validate(measurement);
         int status = std::get<0>(output);
         int failure_count = std::get<1>(output);
-        std::vector<std::string> flags = get_flags(status);
-        write_validation_output(validation_output, i, measurement, forecast, flags, failure_count);
+        write_validation_output(validation_output, i, measurement, forecast, status, failure_count, params.output_format);
         i++;
     }
     
