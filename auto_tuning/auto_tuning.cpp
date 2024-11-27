@@ -116,9 +116,9 @@ WindowParameters tune_window_param(std::vector<float> &training_data, size_t win
     return best_params;
 }
 
-ValidatorParameters find_optimal_param(std::vector<float> &training_data, size_t window_size, float tolerance)
+TunnedParameters find_optimal_param(std::vector<float> &training_data, size_t window_size, float tolerance)
 {
     SmoothingParameters smooth_model = tune_smooth_param(training_data, tolerance);
     WindowParameters window_model = tune_window_param(training_data, window_size, tolerance, smooth_model);
-    return ValidatorParameters({smooth_model, window_model});
+    return {smooth_model, window_model};
 }

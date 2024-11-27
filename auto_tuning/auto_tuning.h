@@ -6,6 +6,12 @@
 #include "../sliding_wind/sliding_window.h"
 #include "../signal_validator/signal_validator.h"
 
-ValidatorParameters find_optimal_param(std::vector<float> &training_data, size_t wintdo_size, float tolerance);
+struct TunnedParameters
+{
+    SmoothingParameters smooth_param;
+    WindowParameters window_param;
+};
+
+TunnedParameters find_optimal_param(std::vector<float> &training_data, size_t wintdo_size, float tolerance);
 
 #endif
