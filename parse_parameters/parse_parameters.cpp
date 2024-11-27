@@ -30,6 +30,20 @@ std::map<std::string, std::string> parseArguments(int argc, char *argv[]) {
     return arguments;
 }
 
+void parameters_validation(SUVMParameters params) {
+    if (params.tolerance < 0) {
+        throw std::invalid_argument("Tolerance must be non-negative");
+    }
+
+    if (params.window_size <= 3) {
+        throw std::invalid_argument("Window size must at least 3");
+    }
+
+    if (params.mode != VALIDATE && params.upper_limit <= params.lower_limit) {
+            throw std::invalid_argument("Upper limit must be greater than lower limit");
+    }
+}
+
 SUVMParameters parse_args(int argc, char *argv[]) {
     if (argc < 2) {
         throw std::invalid_argument("Usage: mode=<tune|validate|tune_validate> [key=value ...]\n");
@@ -44,15 +58,15 @@ SUVMParameters parse_args(int argc, char *argv[]) {
 
     // Validate required arguments based on the mode
     if (mode == "tune") {
-        ensureKeyExists(args, "training_file");
+        ensureKeyExists(args, "tuning_file");
         ensureKeyExists(args, "upper_limit");
         ensureKeyExists(args, "lower_limit");
     } else if (mode == "validate") {
         ensureKeyExists(args, "validation_file");
         ensureKeyExists(args, "config_file");
     } else if (mode == "tune_validate") {
-        ensureKeyExists(args, "training_file");
-        ensureKeyExists(args, "test_file");
+        ensureKeyExists(args, "tuning_file");
+        ensureKeyExists(args, "validation_file");
         ensureKeyExists(args, "upper_limit");
         ensureKeyExists(args, "lower_limit");
     } else {
@@ -63,7 +77,14 @@ SUVMParameters parse_args(int argc, char *argv[]) {
     std::string output_file = args.count("output_file") ? args["output_file"] : "validation_output.csv";
     std::string tolerance = args.count("tolerance") ? args["tolerance"] : "0.6"; // Default tolerance
     std::string window_size = args.count("window_size") ? args["window_size"] : "20"; // Default window size
+    
     Mode mode_enum = mode == "tune" ? TUNE : (mode == "validate" ? VALIDATE : TUNE_VALIDATE);
+    if (args.count("output_format") && args["output_format"] != "long" && args["output_format"] != "short") {
+        throw std::invalid_argument("Invalid value for output format: " + args["output_format"]);
+    }
+    if (args.count("output_format") && mode_enum == TUNE) {
+        throw std::invalid_argument("Output format is not valid for tune mode");
+    }
     OutputFormat output_format = args.count("output_format") ? (args["output_format"] == "long" ? LONG : SHORT) : LONG;
 
     // Print final configuration
@@ -73,12 +94,13 @@ SUVMParameters parse_args(int argc, char *argv[]) {
         std::stof(tolerance),
         std::stof(args["upper_limit"]),
         std::stof(args["lower_limit"]),
-        args.count("training_file") ? args["training_file"] : "",
-        args.count("test_file") ? args["test_file"] : "",
+        args.count("tuning_file") ? args["tuning_file"] : "",
         args.count("validation_file") ? args["validation_file"] : "",
+        args.count("config_file") ? args["config_file"] : "",
         output_file,
         output_format
     );
 
+    parameters_validation(loaded_params);
     return loaded_params;
 }

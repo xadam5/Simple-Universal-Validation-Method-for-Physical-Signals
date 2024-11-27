@@ -18,12 +18,12 @@ enum OutputFormat {
 struct SUVMParameters {
     Mode mode;
     size_t window_size;
-    float threshold;
-    float range_l_limit;
-    float range_u_limit;
-    std::string training_file;
-    std::string test_file;
+    float tolerance;
+    float lower_limit;
+    float upper_limit;
+    std::string tuning_file;
     std::string validation_file;
+    std::string config_file;
     std::string output_file;
     OutputFormat output_format;
 };

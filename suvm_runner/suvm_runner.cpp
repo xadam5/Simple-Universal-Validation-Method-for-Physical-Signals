@@ -77,12 +77,15 @@ void write_validation_output(std::ofstream& output, int index, float measurement
 
 int main(int argc, char *argv[])
 {
+    SUVMParameters params;
     try {
-        SUVMParameters params = parse_args(argc, argv);
-    } catch (const std::invalid_argument &e) {
-        std::cerr << e.what() << std::endl;
+        params = parse_args(argc, argv);
+    } catch (const std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
         return 1;
     }
+
+    INIReader reader(params.config_file);
 
     auto training_file = "../sample_data/noise_change/normal_simulated_data.csv";
     auto test_file = "../sample_data/noise_change/noise_increase_data.csv";
