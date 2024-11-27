@@ -1,6 +1,6 @@
 // Specialization for float
 #include <limits>
-#include <INIReader.h>
+#include "../inih/cpp/INIReader.h"
 #include <stdexcept>
 #include <cmath>
 #include "config_handler.h"

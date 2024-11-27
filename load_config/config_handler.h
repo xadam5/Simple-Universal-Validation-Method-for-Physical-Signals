@@ -1,7 +1,7 @@
 #ifndef LOAD_CONFIG_H
 #define LOAD_CONFIG_H
 
-#include <signal_validator.h>
+#include "../signal_validator/signal_validator.h"
 #include <string>
 
 

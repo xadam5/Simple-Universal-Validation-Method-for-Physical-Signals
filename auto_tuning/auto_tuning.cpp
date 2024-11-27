@@ -62,6 +62,9 @@ SmoothingParameters tune_smooth_param(std::vector<float> &training_data, float t
         }
     }
 
+    best_max_asc += tolerance * best_max_asc;
+    best_max_des += tolerance * best_max_des;
+
     return SmoothingParameters({best_alpha, best_beta, best_max_asc, best_max_des});
 }
 

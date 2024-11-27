@@ -1,8 +1,9 @@
 #ifndef PARSE_PARAMETERS_H
 #define PARSE_PARAMETERS_H
 
-#include <vector>
 #include <string>
+
+extern const std::string USAGE_EXPLANATION;
 
 enum Mode {
     TUNE,
@@ -17,7 +18,7 @@ enum OutputFormat {
 
 struct SUVMParameters {
     Mode mode;
-    size_t window_size;
+    int window_size;
     float tolerance;
     float lower_limit;
     float upper_limit;

@@ -1,4 +1,5 @@
 #include "validator_handler.h"
+#include <tuple>
 
 ValidatorHandler::ValidatorHandler(SignalValidator &validator, float trend_coeff, int window_size)
     : validator(validator),

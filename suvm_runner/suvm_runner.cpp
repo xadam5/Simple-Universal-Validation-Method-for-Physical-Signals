@@ -118,15 +118,15 @@ int main(int argc, char *argv[])
                             optimal_param.window_param,
                             params.lower_limit,
                             params.upper_limit};
+        
+        print_params(validator_params);
     }
-
-    print_params(validator_params);
 
     SignalValidator validator(validator_params);
     ValidatorHandler handler(validator, validator_params.smooth_param.beta, validator_params.window_param.window_size);
 
     std::vector<float> test_data = readCSV(params.validation_file);
-    std::ofstream validation_output(params.output_file);
+    std::ofstream validation_output(params.output_file + ".csv");
     validation_output << ",value,forecast,flags,failure_count" << std::endl;
     int i = 0;
     for (auto measurement : test_data)
