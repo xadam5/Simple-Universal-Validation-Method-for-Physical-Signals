@@ -2,7 +2,6 @@
 #include <deque>
 #include <cmath>
 #include <vector>
-#include <tuple>
 #include "sliding_window.h"
 
 SlidingWindow::SlidingWindow(size_t window_size)

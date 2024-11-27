@@ -3,7 +3,6 @@
 
 #include <deque>
 #include <vector>
-#include <tuple>
 
 class SlidingWindow
 {
