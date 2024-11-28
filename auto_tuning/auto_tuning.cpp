@@ -72,7 +72,7 @@ WindowParameters tune_window_param(std::vector<float> &training_data, size_t win
 {
     WindowParameters best_params({window_size, 0, std::numeric_limits<float>::max(), 0});
     HoltLinearModel smooth_model = HoltLinearModel(smooth_param.alpha, smooth_param.beta);
-    int i = 0;
+    size_t i = 0;
     while (smooth_model.isInitializing())
     {
         smooth_model.initialize(training_data[i]);

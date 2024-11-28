@@ -66,12 +66,9 @@ int SignalValidator::validate(float value)
 
     int status = VALID;
 
-    float prediction = smooth_model.forecast();
-    float difference = value - prediction;
+    if (range_check(value)) { status |= OUT_OF_RANGE; }
 
-    if (!range_check(value)) { status |= OUT_OF_RANGE; }
-
-    if (!continuity_check(value)) { status |= NOT_CONTINUOUS; }
+    if (continuity_check(value)) { status |= NOT_CONTINUOUS; }
 
     if (stuck_check()) { status |= STUCK; }
 
@@ -86,7 +83,7 @@ int SignalValidator::validate(float value)
 
 bool SignalValidator::range_check(float value)
 {
-    return value < range_u_limit && value > range_l_limit;
+    return value > range_u_limit || value < range_l_limit;
 }
 
 bool SignalValidator::continuity_check(float value)
@@ -99,7 +96,7 @@ bool SignalValidator::continuity_check(float value)
     }
     float prediction = smooth_model.forecast();
     float difference = value - prediction;
-    return std::abs((me - difference)) / sd < continuity_threshold;
+    return std::abs((me - difference)) / sd >= continuity_threshold;
 }
 
 bool SignalValidator::stuck_check()
