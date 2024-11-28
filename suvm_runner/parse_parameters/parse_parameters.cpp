@@ -89,7 +89,7 @@ SUVMParameters parse_args(int argc, char *argv[]) {
     }
 
     // Optional arguments with defaults
-    std::string o_file = args.count("o_file") ? args["o_file"] : "validation_output.csv";
+    std::string o_file = args.count("o_file") ? args["o_file"] : "validation_output";
     std::string tolerance_s = args.count("tol") ? args["tol"] : "0.6"; // Default tolerance
     std::string w_size_s = args.count("w_size") ? args["w_size"] : "20"; // Default window size
 
