@@ -9,7 +9,7 @@
 #include "../signal_validator/signal_validator.h"
 #include "../validator_handler/validator_handler.h"
 #include "../auto_tuning/auto_tuning.h"
-#include "../data_manipulation/CSVReader.h"
+#include "csv_reader/csv_reader.h"
 #include "load_config/config_handler.h"
 
 void print_params(ValidatorParameters params) {
@@ -96,14 +96,32 @@ int main(int argc, char *argv[])
 
     ValidatorParameters validator_params;
     if (params.mode == TUNE) {
-        std::vector<float> tuning_data = readCSV(params.tuning_file);
+        std::vector<float> tuning_data;
+        try
+        {
+            tuning_data = readCSV(params.tuning_file);
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+            return 1;
+        }
+
         TunnedParameters optimal_param = find_optimal_param(tuning_data, params.window_size, params.tolerance);
         validator_params = {optimal_param.smooth_param,
                             optimal_param.window_param,
                             params.lower_limit,
                             params.upper_limit};
-
-        generate_config(validator_params, params.output_file);
+        try
+        { 
+            generate_config(validator_params, params.output_file);  
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+            return 1;
+        }
+        
         return 0;
     }
 
@@ -117,11 +135,20 @@ int main(int argc, char *argv[])
             std::cerr << e.what() << '\n';
             return 1;
         }
-        print_params(validator_params);
     }
 
     if (params.mode == TUNE_VALIDATE) {
-        std::vector<float> tuning_data = readCSV(params.tuning_file);
+        std::vector<float> tuning_data;
+        try
+        {
+            tuning_data = readCSV(params.tuning_file);
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+            return 1;
+        }
+
         TunnedParameters optimal_param = find_optimal_param(tuning_data, params.window_size, params.tolerance);
         validator_params = {optimal_param.smooth_param,
                             optimal_param.window_param,
@@ -134,8 +161,22 @@ int main(int argc, char *argv[])
     SignalValidator validator(validator_params);
     ValidatorHandler handler(validator, validator_params.smooth_param.beta, validator_params.window_param.window_size);
 
-    std::vector<float> test_data = readCSV(params.validation_file);
+    std::vector<float> test_data;
+    try
+    {
+        test_data = readCSV(params.validation_file);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        return 1;
+    }
+    
     std::ofstream validation_output(params.output_file + ".csv");
+    if (!validation_output.is_open()) {
+        throw std::fstream::failure("Error: Could not open the file " + params.output_file + ".csv");
+        return 1;
+    }
 
     if (params.output_format == SHORT) {
         validation_output << ",status,failure_count" << std::endl;
