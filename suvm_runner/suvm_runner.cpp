@@ -69,7 +69,7 @@ std::vector<std::string> get_flags(int status) {
 
 void write_validation_output(std::ofstream& output, int index, float measurement, float forecast, int status, int failure_count, OutputFormat format) {
     if (format == SHORT) {
-        output << index << "," << measurement << "," << status << "," << failure_count << std::endl;
+        output << index << "," <<  status << "," << failure_count << std::endl;
         return;
     }
 
@@ -136,7 +136,12 @@ int main(int argc, char *argv[])
 
     std::vector<float> test_data = readCSV(params.validation_file);
     std::ofstream validation_output(params.output_file + ".csv");
-    validation_output << ",value,forecast,flags,failure_count" << std::endl;
+
+    if (params.output_format == SHORT) {
+        validation_output << ",status,failure_count" << std::endl;
+    } else {
+        validation_output << ",value,forecast,flags,failure_count" << std::endl;
+    }
     int i = 0;
     for (auto measurement : test_data)
     {

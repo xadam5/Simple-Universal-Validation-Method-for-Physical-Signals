@@ -38,6 +38,10 @@ int get_param(const INIReader& reader, const std::string& section, const std::st
 
 ValidatorParameters load_config(const std::string& config_file) {
     INIReader reader(config_file);
+     if (reader.ParseError() < 0) {
+        throw std::invalid_argument("Can't load " + config_file);
+    }
+
     auto NONE = std::numeric_limits<float>::quiet_NaN();
 
     SmoothingParameters smooth_param;
