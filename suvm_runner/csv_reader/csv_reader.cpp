@@ -3,17 +3,20 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <stdexcept>
+#include "csv_reader.h"
 
 std::vector<float> readCSV(const std::string& filename) {
-    std::vector<float> data;
     std::ifstream file(filename);
     
     if (!file.is_open()) {
-        std::cerr << "Error: Could not open the file " << filename << std::endl;
-        return data;
+        auto error_message = "Error: Could not open the file " + filename;
+        throw std::ios_base::failure(error_message);
     }
     
+    std::vector<float> data;
     std::string line;
+    std::getline(file, line);
     
     // Read the file line by line
     while (std::getline(file, line)) {
