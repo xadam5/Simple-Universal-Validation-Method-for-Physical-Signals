@@ -5,7 +5,7 @@
 #include <sstream>
 #include <limits>
 #include "parse_parameters.h"
-#include "../../signal_validator/signal_validator.h"
+#include "../../validation_method/signal_validator/signal_validator.h"
 
 const std::string USAGE_EXPLANATION = "usage: suvm_runner mode=tune t_file=<path/to/file.csv> l_limit=<num> u_limit=<num> [o_file=<filename> tol=<num> w_size=<num>] \n"
                                       "or:    suvm_runner mode=validate v_file=<path/to/file.csv> c_file=<path/to/c_file.ini> [o_file=<filename> o_format=<long|short>] \n"

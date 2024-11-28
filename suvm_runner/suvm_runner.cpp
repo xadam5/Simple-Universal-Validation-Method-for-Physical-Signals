@@ -6,9 +6,9 @@
 #include <stdexcept>
 #include <limits>
 #include "parse_parameters/parse_parameters.h"
-#include "../signal_validator/signal_validator.h"
-#include "../validator_handler/validator_handler.h"
-#include "../auto_tuning/auto_tuning.h"
+#include "../validation_method/signal_validator/signal_validator.h"
+#include "../validation_method/validator_handler/validator_handler.h"
+#include "../validation_method/auto_tuning/auto_tuning.h"
 #include "csv_reader/csv_reader.h"
 #include "load_config/config_handler.h"
 
