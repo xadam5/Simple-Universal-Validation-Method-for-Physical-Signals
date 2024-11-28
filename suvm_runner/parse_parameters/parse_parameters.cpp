@@ -3,8 +3,9 @@
 #include <stdexcept>
 #include <string>
 #include <sstream>
+#include <limits>
 #include "parse_parameters.h"
-#include "../signal_validator/signal_validator.h"
+#include "../../signal_validator/signal_validator.h"
 
 const std::string USAGE_EXPLANATION = "Usage: suvm_runner mode=tune t_file=<path/to/file.csv> l_limit=<num> u_limit=<num> [o_file=<filename> tol=<num> w_size=<num>] \n"
                                       "suvm_runner mode=validate v_file=<path/to/file.csv> c_file=<path/to/c_file.ini> [o_file=<filename> o_format=<long|short>] \n"
@@ -89,8 +90,16 @@ SUVMParameters parse_args(int argc, char *argv[]) {
 
     // Optional arguments with defaults
     std::string o_file = args.count("o_file") ? args["o_file"] : "validation_output.csv";
-    std::string tolerance = args.count("tol") ? args["tol"] : "0.6"; // Default tolerance
-    std::string w_size = args.count("w_size") ? args["w_size"] : "20"; // Default window size
+    std::string tolerance_s = args.count("tol") ? args["tol"] : "0.6"; // Default tolerance
+    std::string w_size_s = args.count("w_size") ? args["w_size"] : "20"; // Default window size
+
+    std::string t_file = args.count("t_file") ? args["t_file"] : "";
+    std::string v_file = args.count("v_file") ? args["v_file"] : "";
+    std::string c_file = args.count("c_file") ? args["c_file"] : "";
+    int w_size = std::stoi(w_size_s);
+    float tolerance = std::stof(tolerance_s);
+    float l_limit = args.count("l_limit") ? std::stof(args["l_limit"]) : std::numeric_limits<float>::quiet_NaN();
+    float u_limit = args.count("u_limit") ? std::stof(args["u_limit"]) : std::numeric_limits<float>::quiet_NaN();
     
     Mode mode_enum = mode == "tune" ? TUNE : (mode == "validate" ? VALIDATE : TUNE_VALIDATE);
     if (args.count("o_format") && args["o_format"] != "long" && args["o_format"] != "short") {
@@ -104,13 +113,13 @@ SUVMParameters parse_args(int argc, char *argv[]) {
     // Print final configuration
     SUVMParameters loaded_params({
         mode_enum,
-        std::stoi(w_size),
-        std::stof(tolerance),
-        std::stof(args["l_limit"]),
-        std::stof(args["u_limit"]),
-        args.count("t_file") ? args["t_file"] : "",
-        args.count("v_file") ? args["v_file"] : "",
-        args.count("c_file") ? args["c_file"] : "",
+        w_size,
+        tolerance,
+        l_limit,
+        u_limit,
+        t_file,
+        v_file,
+        c_file,
         o_file,
         o_format
     });

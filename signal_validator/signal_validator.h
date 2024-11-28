@@ -2,8 +2,8 @@
 #define SIGNAL_VALIDATOR_H
 
 #include <vector>
-#include "../expon_sm/exponential_smooth.h"
-#include "../sliding_wind/sliding_window.h"
+#include "expon_sm/exponential_smooth.h"
+#include "sliding_wind/sliding_window.h"
 
 struct SmoothingParameters
 {

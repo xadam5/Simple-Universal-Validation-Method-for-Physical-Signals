@@ -1,3 +1,6 @@
 [submodule "inih"]
 	path = inih
 	url = https://github.com/benhoyt/inih.git
+[submodule "suvm_runner/load_config/inih"]
+	path = suvm_runner/load_config/inih
+	url = https://github.com/benhoyt/inih.git

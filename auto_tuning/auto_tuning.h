@@ -2,8 +2,6 @@
 #define AUTO_TUNER_H
 
 #include <limits>
-#include "../expon_sm/exponential_smooth.h"
-#include "../sliding_wind/sliding_window.h"
 #include "../signal_validator/signal_validator.h"
 
 struct TunnedParameters

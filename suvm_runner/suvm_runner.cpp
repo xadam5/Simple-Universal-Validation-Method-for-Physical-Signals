@@ -5,23 +5,23 @@
 #include <tuple>
 #include <stdexcept>
 #include <limits>
-#include "../parse_parameters/parse_parameters.h"
+#include "parse_parameters/parse_parameters.h"
 #include "../signal_validator/signal_validator.h"
 #include "../validator_handler/validator_handler.h"
 #include "../auto_tuning/auto_tuning.h"
 #include "../data_manipulation/CSVReader.h"
-#include "../load_config/config_handler.h"
+#include "load_config/config_handler.h"
 
 void print_params(ValidatorParameters params) {
-    std::cout << "Alpha: " << params.smooth_param.alpha 
+    std::cout << "Alpha: " << params.smooth_param.alpha << " "
               << "Beta: " << params.smooth_param.beta << std::endl;
     std::cout << "Continuity threshold: " << params.window_param.threshold << std::endl;
     std::cout << "Window Size: " << params.window_param.window_size << std::endl;
-    std::cout << "Min SD: " << params.window_param.min_sd
+    std::cout << "Min SD: " << params.window_param.min_sd << " "
               << "Max SD: " << params.window_param.max_sd << std::endl;
-    std::cout << "Lower Limit: " << params.range_l_limit
+    std::cout << "Lower Limit: " << params.range_l_limit << " "
               << "Upper Limit: " << params.range_u_limit << std::endl;
-    std::cout << "Max Asc: " << params.smooth_param.max_asc 
+    std::cout << "Max Asc: " << params.smooth_param.max_asc << " "
               << "Max Des: " << params.smooth_param.max_des << std::endl;
 }
 
@@ -108,7 +108,16 @@ int main(int argc, char *argv[])
     }
 
     if (params.mode == VALIDATE) {
-        validator_params = load_config(params.config_file);
+        try
+        {
+            validator_params = load_config(params.config_file);
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+            return 1;
+        }
+        print_params(validator_params);
     }
 
     if (params.mode == TUNE_VALIDATE) {

@@ -1,6 +1,6 @@
 // Specialization for float
 #include <limits>
-#include "../inih/cpp/INIReader.h"
+#include "inih/cpp/INIReader.h"
 #include <stdexcept>
 #include <cmath>
 #include "config_handler.h"
@@ -41,6 +41,7 @@ ValidatorParameters load_config(const std::string& config_file) {
     auto NONE = std::numeric_limits<float>::quiet_NaN();
 
     SmoothingParameters smooth_param;
+    smooth_param.alpha = get_param(reader, "exp_smoothing", "alpha", NONE);
     smooth_param.beta = get_param(reader, "exp_smoothing", "beta", NONE);
     smooth_param.max_asc = get_param(reader, "exp_smoothing", "max_asc", NONE);
     smooth_param.max_des = get_param(reader, "exp_smoothing", "max_des", NONE);
