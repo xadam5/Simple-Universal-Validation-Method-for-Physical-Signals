@@ -8,7 +8,7 @@ CXXFLAGS = -std=c++11 -Wall -Wextra -g
 INCLUDES = -Iload_config/inih/cpp
 
 # Source files
-SRCS = suvm_runner.cpp \
+SRCS_CPP = suvm_runner.cpp \
 		../signal_validator/signal_validator.cpp \
 		../validator_handler/validator_handler.cpp \
 		../auto_tuning/auto_tuning.cpp \
@@ -17,11 +17,16 @@ SRCS = suvm_runner.cpp \
 		csv_reader/csv_reader.cpp \
 		parse_parameters/parse_parameters.cpp \
 		load_config/config_handler.cpp \
-		load_config/inih/cpp/INIReader.cpp \
-		load_config/inih/ini.c
+		load_config/inih/cpp/INIReader.cpp
+
+SRCS_C = load_config/inih/ini.c
 
 # Object files
-OBJS = $(SRCS:.cpp=.o) $(SRCS:.c=.o)
+OBJS_CPP = $(SRCS_CPP:.cpp=.o)
+OBJS_C = $(SRCS_C:.c=.o)
+
+# All object files
+OBJS = $(OBJS_CPP) $(OBJS_C)
 
 # Executable name
 EXEC = suvm
@@ -31,13 +36,13 @@ all: $(EXEC)
 
 # Link the executable
 $(EXEC): $(OBJS)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $^
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $(OBJS)
 
-# Compile source files into object files
+# Compile C++ source files into object files
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-# Compile .c source files into object files
+# Compile C source files into object files
 %.o: %.c
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
