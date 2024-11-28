@@ -25,49 +25,52 @@ void print_params(ValidatorParameters params) {
               << "Max Des: " << params.smooth_param.max_des << std::endl;
 }
 
+ValidatorParameters get_validator_params(SUVMParameters &params)
+{
+    std::vector<float> tuning_data;
+    ValidatorParameters validator_params;
+    switch (params.mode) {
+        case VALIDATE:
+            validator_params = load_config(params.config_file);
+            break;
+
+        default:
+            tuning_data = readCSV(params.tuning_file);
+            TunnedParameters optimal_param = find_optimal_param(tuning_data, params.window_size, params.tolerance);
+            validator_params = {optimal_param.smooth_param,
+                                optimal_param.window_param,
+                                params.lower_limit,
+                                params.upper_limit};
+            break;
+        }
+
+        if (params.mode == TUNE) {
+            generate_config(validator_params, params.config_file);
+        }
+
+        if (params.mode == TUNE_VALIDATE) {
+            print_params(validator_params);
+        }
+
+        return validator_params;
+}
+
 std::vector<std::string> get_flags(int status) {
     std::vector<std::string> flags;
-    if (status & INVALID) {
-        flags.push_back("INVALID");
-    }
-    if (status & LOST) {
-        flags.push_back("LOST");
-    }
-    if (status & INITIALIZING) {
-        flags.push_back("INITIALIZING");
-    }
-    if (status & OUT_OF_RANGE) {
-        flags.push_back("OUT_OF_RANGE");
-    }
-    if (status & NOT_CONTINUOUS)
-    {
-        flags.push_back("NOT_CONTINUOUS");
-    }
-    if (status & STUCK)
-    {
-        flags.push_back("STUCK");
-    }
-    if (status & NOISY)
-    {
-        flags.push_back("NOISY");
-    }
-    if (status & RAPID_INCREASE)
-    {
-        flags.push_back("RAPID_INCREASE");
-    }
-    if (status & RAPID_DECREASE)
-    {
-        flags.push_back("RAPID_DECREASE");
-    }
-
-    if (flags.empty())
-    {
-        flags.push_back("VALID");
-    }
+    if (status & INVALID) { flags.push_back("INVALID"); }
+    if (status & LOST) { flags.push_back("LOST"); }
+    if (status & INITIALIZING) { flags.push_back("INITIALIZING"); }
+    if (status & OUT_OF_RANGE) { flags.push_back("OUT_OF_RANGE"); }
+    if (status & NOT_CONTINUOUS) { flags.push_back("NOT_CONTINUOUS"); }
+    if (status & STUCK) { flags.push_back("STUCK"); }
+    if (status & NOISY) { flags.push_back("NOISY"); }
+    if (status & RAPID_INCREASE) { flags.push_back("RAPID_INCREASE"); }
+    if (status & RAPID_DECREASE) { flags.push_back("RAPID_DECREASE"); }
+    if (flags.empty()) { flags.push_back("VALID"); }
     return flags;
 }
 
-void write_validation_output(std::ofstream& output, int index, float measurement, float forecast, int status, int failure_count, OutputFormat format) {
+void write_validation_line(std::ofstream& output, int index, float measurement, float forecast, int status, int failure_count, OutputFormat format) {
     if (format == SHORT) {
         output << index << "," <<  status << "," << failure_count << std::endl;
         return;
@@ -84,104 +87,16 @@ void write_validation_output(std::ofstream& output, int index, float measurement
     output << "\"," << failure_count << std::endl;
 }
 
-int main(int argc, char *argv[])
-{
-    SUVMParameters params;
-    try {
-        params = parse_args(argc, argv);
-    } catch (const std::exception &ex) {
-        std::cerr << ex.what() << std::endl;
-        return 1;
-    }
-
-    ValidatorParameters validator_params;
-    if (params.mode == TUNE) {
-        std::vector<float> tuning_data;
-        try
-        {
-            tuning_data = readCSV(params.tuning_file);
-        }
-        catch(const std::exception& e)
-        {
-            std::cerr << e.what() << '\n';
-            return 1;
-        }
-
-        TunnedParameters optimal_param = find_optimal_param(tuning_data, params.window_size, params.tolerance);
-        validator_params = {optimal_param.smooth_param,
-                            optimal_param.window_param,
-                            params.lower_limit,
-                            params.upper_limit};
-        try
-        { 
-            generate_config(validator_params, params.output_file);  
-        }
-        catch(const std::exception& e)
-        {
-            std::cerr << e.what() << '\n';
-            return 1;
-        }
-        
-        return 0;
-    }
-
-    if (params.mode == VALIDATE) {
-        try
-        {
-            validator_params = load_config(params.config_file);
-        }
-        catch(const std::exception& e)
-        {
-            std::cerr << e.what() << '\n';
-            return 1;
-        }
-    }
-
-    if (params.mode == TUNE_VALIDATE) {
-        std::vector<float> tuning_data;
-        try
-        {
-            tuning_data = readCSV(params.tuning_file);
-        }
-        catch (const std::exception& e)
-        {
-            std::cerr << e.what() << '\n';
-            return 1;
-        }
-
-        TunnedParameters optimal_param = find_optimal_param(tuning_data, params.window_size, params.tolerance);
-        validator_params = {optimal_param.smooth_param,
-                            optimal_param.window_param,
-                            params.lower_limit,
-                            params.upper_limit};
-        
-        print_params(validator_params);
-    }
-
-    SignalValidator validator(validator_params);
-    ValidatorHandler handler(validator, validator_params.smooth_param.beta, validator_params.window_param.window_size);
-
-    std::vector<float> test_data;
-    try
-    {
-        test_data = readCSV(params.validation_file);
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-        return 1;
-    }
-    
-    std::ofstream validation_output(params.output_file + ".csv");
+void simulate_validation(std::string output_file, std::vector<float> &test_data, SignalValidator &validator, ValidatorHandler &handler, OutputFormat output_format) {
+    std::ofstream validation_output(output_file + ".csv");
     if (!validation_output.is_open()) {
-        throw std::fstream::failure("Error: Could not open the file " + params.output_file + ".csv");
-        return 1;
+        throw std::fstream::failure("Error: Could not open the file " + output_file + ".csv");
     }
 
-    if (params.output_format == SHORT) {
-        validation_output << ",status,failure_count" << std::endl;
+    if (output_format == SHORT) {
+        validation_output << "timestamp,status,failure_count" << std::endl;
     } else {
-        validation_output << ",value,forecast,flags,failure_count" << std::endl;
+        validation_output << "timestamp,value,forecast,flags,failure_count" << std::endl;
     }
     int i = 0;
     for (auto measurement : test_data)
@@ -190,10 +105,31 @@ int main(int argc, char *argv[])
         std::tuple<int, int> output = handler.validate(measurement);
         int status = std::get<0>(output);
         int failure_count = std::get<1>(output);
-        write_validation_output(validation_output, i, measurement, forecast, status, failure_count, params.output_format);
+        write_validation_line(validation_output, i, measurement, forecast, status, failure_count, output_format);
         i++;
     }
     
     validation_output.close();
+}
+
+int main(int argc, char *argv[])
+{
+    try {
+        SUVMParameters program_params = parse_args(argc, argv);
+        ValidatorParameters validator_params = get_validator_params(program_params);
+        if(program_params.mode == TUNE) {
+            return 0;
+        }
+
+        SignalValidator validator(validator_params);
+        ValidatorHandler handler(validator, validator_params.smooth_param.beta, validator_params.window_param.window_size);
+
+        std::vector<float> test_data = readCSV(program_params.validation_file);
+        simulate_validation(program_params.output_file, test_data, validator, handler, program_params.output_format);
+
+    } catch (const std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+        return 1;
+    }
     return 0;
 }
