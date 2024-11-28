@@ -27,12 +27,14 @@ struct ValidatorParameters
     WindowParameters window_param;
     float range_l_limit;
     float range_u_limit;
+    int invalid_threshold;
 };
 
 enum ValidationStatus
 {
     VALID           = 0b0,
-    INITIALIZING    = 0b1000000,
+    INITIALIZING    = 0b10000000,
+    MISSING_VALUE   = 0b1000000,
     OUT_OF_RANGE    = 0b100000,
     NOT_CONTINUOUS  = 0b10000,
     STUCK           = 0b1000,

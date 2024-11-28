@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <limits>
 #include "csv_reader.h"
 
 std::vector<float> readCSV(const std::string& filename) {
@@ -30,7 +31,7 @@ std::vector<float> readCSV(const std::string& filename) {
                 try {
                     data.push_back(std::stod(cell));  // Convert to float and store
                 } catch (const std::invalid_argument& e) {
-                    std::cerr << "Error: Invalid floating-point number in file:" << cell << std::endl;
+                    data.push_back(std::numeric_limits<float>::quiet_NaN());  // Store NaN if conversion fails
                     break;
                 }
                 break;  // No need to process further in this row once we have the second value

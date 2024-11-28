@@ -40,7 +40,8 @@ ValidatorParameters get_validator_params(SUVMParameters &params)
             validator_params = {optimal_param.smooth_param,
                                 optimal_param.window_param,
                                 params.lower_limit,
-                                params.upper_limit};
+                                params.upper_limit,
+                                params.invalid_threshold};
             break;
         }
 
@@ -60,6 +61,7 @@ std::vector<std::string> get_flags(int status) {
     if (status & INVALID) { flags.push_back("INVALID"); }
     if (status & LOST) { flags.push_back("LOST"); }
     if (status & INITIALIZING) { flags.push_back("INITIALIZING"); }
+    if (status & MISSING_VALUE) { flags.push_back("MISSING_VALUE"); }
     if (status & OUT_OF_RANGE) { flags.push_back("OUT_OF_RANGE"); }
     if (status & NOT_CONTINUOUS) { flags.push_back("NOT_CONTINUOUS"); }
     if (status & STUCK) { flags.push_back("STUCK"); }
@@ -122,7 +124,7 @@ int main(int argc, char *argv[])
         }
 
         SignalValidator validator(validator_params);
-        ValidatorHandler handler(validator, validator_params.smooth_param.beta, validator_params.window_param.window_size);
+        ValidatorHandler handler(validator, validator_params.smooth_param.beta, validator_params.window_param.window_size, program_params.invalid_threshold);
 
         std::vector<float> test_data = readCSV(program_params.validation_file);
         simulate_validation(program_params.output_file, test_data, validator, handler, program_params.output_format);

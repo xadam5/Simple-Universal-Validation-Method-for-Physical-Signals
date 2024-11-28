@@ -7,12 +7,13 @@
 #include "parse_parameters.h"
 #include "../../validation_method/signal_validator/signal_validator.h"
 
-const std::string USAGE_EXPLANATION = "usage: suvm_runner mode=tune t_file=<path/to/file.csv> l_limit=<num> u_limit=<num> [o_file=<filename> tol=<num> w_size=<num>] \n"
+const std::string USAGE_EXPLANATION = "usage: suvm_runner mode=tune t_file=<path/to/file.csv> l_limit=<num> u_limit=<num> [o_file=<filename> tol=<num> i_thr=<num> w_size=<num> ] \n"
                                       "or:    suvm_runner mode=validate v_file=<path/to/file.csv> c_file=<path/to/c_file.ini> [o_file=<filename> o_format=<long|short>] \n"
-                                      "or:    suvm_runner mode=tune_validate t_file=<path/to/file.csv> v_file=<path/to/file.csv> l_limit=<num> u_limit=<num> [o_file=<filename> tol=<num> w_size=<num> o_format=<long|short>] \n\n"
+                                      "or:    suvm_runner mode=tune_validate t_file=<path/to/file.csv> v_file=<path/to/file.csv> l_limit=<num> u_limit=<num> [o_file=<filename> tol=<num> i_thr=<num> w_size=<num> o_format=<long|short> ] \n\n"
                                       "mode: tune, validate, tune_validate\n"
                                       "w_size: size of the sliding window\n"
                                       "tol: tolerance for the measured thresholds\n"
+                                      "i_thr: threshold for consecutive invalid measurements\n"
                                       "l_limit: lower limit of value\n"
                                       "u_limit: upper limit of value\n"
                                       "t_file: path to the csv tuning file\n"
@@ -92,11 +93,13 @@ SUVMParameters parse_args(int argc, char *argv[]) {
     std::string o_file = args.count("o_file") ? args["o_file"] : "validation_output";
     std::string tolerance_s = args.count("tol") ? args["tol"] : "0.6"; // Default tolerance
     std::string w_size_s = args.count("w_size") ? args["w_size"] : "20"; // Default window size
+    std::string i_threshold_s = args.count("i_thr") ? args["i_thr"] : "10"; // Default window size
 
     std::string t_file = args.count("t_file") ? args["t_file"] : "";
     std::string v_file = args.count("v_file") ? args["v_file"] : "";
     std::string c_file = args.count("c_file") ? args["c_file"] : "";
     int w_size = std::stoi(w_size_s);
+    int i_threshold = std::stoi(i_threshold_s);
     float tolerance = std::stof(tolerance_s);
     float l_limit = args.count("l_limit") ? std::stof(args["l_limit"]) : std::numeric_limits<float>::quiet_NaN();
     float u_limit = args.count("u_limit") ? std::stof(args["u_limit"]) : std::numeric_limits<float>::quiet_NaN();
@@ -117,6 +120,7 @@ SUVMParameters parse_args(int argc, char *argv[]) {
         tolerance,
         l_limit,
         u_limit,
+        i_threshold,
         t_file,
         v_file,
         c_file,

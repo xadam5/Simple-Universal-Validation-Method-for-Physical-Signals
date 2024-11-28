@@ -22,6 +22,7 @@ struct SUVMParameters {
     float tolerance;
     float lower_limit;
     float upper_limit;
+    int invalid_threshold;
     std::string tuning_file;
     std::string validation_file;
     std::string config_file;

@@ -66,6 +66,12 @@ int SignalValidator::validate(float value)
 
     int status = VALID;
 
+    if (std::isnan(value))
+    {
+        status |= MISSING_VALUE;
+        value = forecast();
+    }
+
     if (range_check(value)) { status |= OUT_OF_RANGE; }
 
     if (continuity_check(value)) { status |= NOT_CONTINUOUS; }

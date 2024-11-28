@@ -61,6 +61,7 @@ ValidatorParameters load_config(const std::string& config_file) {
     params.window_param = window_param;
     params.range_l_limit = get_param(reader, "range", "lower_limit", NONE);
     params.range_u_limit = get_param(reader, "range", "upper_limit", NONE);
+    params.invalid_threshold = get_param(reader, "exp_smoothing", "invalid_threshold", static_cast<int>(NONE));
 
     return params;
 }
@@ -72,6 +73,7 @@ void generate_config(ValidatorParameters params, const std::string& config_file)
     ini_file << "beta = " << params.smooth_param.beta << std::endl;
     ini_file << "max_asc = " << params.smooth_param.max_asc << std::endl;
     ini_file << "max_des = " << params.smooth_param.max_des << std::endl;
+    ini_file << "invalid_threshold = " << params.invalid_threshold << std::endl;
     ini_file << std::endl;
 
     ini_file << "[sliding_window]" << std::endl;

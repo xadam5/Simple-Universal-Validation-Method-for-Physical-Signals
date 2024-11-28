@@ -1,15 +1,35 @@
 #include "validator_handler.h"
 #include <tuple>
+#include <cmath>
 
-ValidatorHandler::ValidatorHandler(SignalValidator &validator, float trend_coeff, int window_size)
+ValidatorHandler::ValidatorHandler(SignalValidator &validator, float trend_coeff, int window_size, int invalid_threshold)
     : validator(validator),
-      not_cont_threshold(10 - (5 - (1 + trend_coeff) * 10)),
+      not_cont_threshold(invalid_threshold + (invalid_threshold / 2 - (1 - trend_coeff) * invalid_threshold)),
+      missing_value_threshold(invalid_threshold + (invalid_threshold / 2 - (1 - trend_coeff) * invalid_threshold)),
       variability_threshold(window_size / 2),
-      rapid_change_threshold(10 - (5 - trend_coeff * 10))
+      rapid_change_threshold(invalid_threshold - (invalid_threshold / 2 - trend_coeff * invalid_threshold))
 {}
 
 std::tuple<int, int> ValidatorHandler::validate(float value)
 {
+    if (std::isnan(value))
+    {
+        missing_value_count++;
+        update_failure_counter(true);
+        validator.update(validator.forecast());
+        int status = INVALID | MISSING_VALUE;
+        if (missing_value_count > missing_value_threshold)
+        {
+            is_lost = true;
+            status |= LOST;
+        }
+        return std::make_tuple(status, failure_count);
+    }
+    else
+    {
+        missing_value_count = 0;
+    }
+
     int status = validator.validate(value);
 
     if (status & INITIALIZING)
@@ -46,6 +66,16 @@ std::tuple<int, int> ValidatorHandler::validate(float value)
 
     update_failure_counter(status != VALID);
     return std::make_tuple(output, failure_count);
+}
+
+void ValidatorHandler::missing_check(int status)
+{
+    status & MISSING_VALUE ? missing_value_count++ : missing_value_count = 0;
+
+    if (missing_value_count > missing_value_threshold)
+    {
+        is_lost = true;
+    }
 }
 
 void ValidatorHandler::range_check(int status)
