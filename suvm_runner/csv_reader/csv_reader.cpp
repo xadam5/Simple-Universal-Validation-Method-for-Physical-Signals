@@ -17,7 +17,7 @@ std::vector<float> readCSV(const std::string& filename) {
     
     std::vector<float> data;
     std::string line;
-    std::getline(file, line);
+    std::getline(file, line); // Skip the header
     
     // Read the file line by line
     while (std::getline(file, line)) {
@@ -34,9 +34,9 @@ std::vector<float> readCSV(const std::string& filename) {
                     data.push_back(std::numeric_limits<float>::quiet_NaN());  // Store NaN if conversion fails
                     break;
                 }
-                break;  // No need to process further in this row once we have the second value
+                break;
             }
-            ++col;  // Move to the next column
+            ++col;
         }
     }
     
