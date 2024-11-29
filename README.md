@@ -61,7 +61,7 @@ suvm_runner mode=tune_validate t_file=<path/to/file.csv> v_file=<path/to/file.cs
 - **`mode`**: Mode of operation (`tune`, `validate`, `tune_validate`).  
 - **`w_size`**: Sliding window size (default: 20).  
 - **`tol`**: Tolerance for measured thresholds (default: 0.6).  
-- **`i_thr`**: Threshold for consecutive invalid measurements (default: 10).  
+- **`i_thr`**: Base of threshold for consecutive invalid measurements (default: 10).  
 - **`l_limit`**: Lower limit of valid values.  
 - **`u_limit`**: Upper limit of valid values.  
 - **`t_file`**: Path to the CSV tuning file.  
@@ -129,11 +129,3 @@ suvm_runner mode=tune_validate t_file=data/tuning_data.csv v_file=data/validatio
 
 ---
 
-## Notes  
-- Ensure the tuning file is anomaly-free.  
-- Avoid manual changes to the configuration file unless necessary.  
-- Use recommended default values for optimal results, unless you have a deep understanding of the validator.  
-
---- 
-
-Feel free to modify the README further as per your preferences!
