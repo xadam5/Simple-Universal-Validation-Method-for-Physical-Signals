@@ -62,7 +62,6 @@ void grid_search(const std::vector<float> &training_data, float &best_alpha, flo
 
 SmoothingParameters tune_smooth_param(std::vector<float> &training_data, float tolerance)
 {
-    float best_mse = std::numeric_limits<float>::max();
     float best_alpha, best_beta, best_max_asc, best_max_des;
     std::vector<float> predictions;
 

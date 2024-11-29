@@ -4,8 +4,8 @@
 
 ValidatorHandler::ValidatorHandler(SignalValidator &validator, float trend_coeff, int window_size, int invalid_threshold)
     : validator(validator),
+      missing_value_threshold(invalid_threshold),
       not_cont_threshold(invalid_threshold + (invalid_threshold / 2 - (1 - trend_coeff) * invalid_threshold)),
-      missing_value_threshold(invalid_threshold + (invalid_threshold / 2 - (1 - trend_coeff) * invalid_threshold)),
       variability_threshold(window_size / 2),
       rapid_change_threshold(invalid_threshold - (invalid_threshold / 2 - trend_coeff * invalid_threshold))
 {}
