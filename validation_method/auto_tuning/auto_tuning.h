@@ -10,6 +10,6 @@ struct TunnedParameters
     WindowParameters window_param;
 };
 
-TunnedParameters find_optimal_param(std::vector<float> &training_data, size_t wintdo_size, float tolerance);
+TunnedParameters find_optimal_param(std::vector<float> &tuning_data, size_t wintdo_size, float tolerance);
 
 #endif
