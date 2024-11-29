@@ -15,10 +15,8 @@ SignalValidator::SignalValidator(ValidatorParameters param)
       max_asc(param.smooth_param.max_asc),
       max_des(param.smooth_param.max_des) {}
 
-void SignalValidator::update(float new_value)
-{
-    if (is_initializing)
-    {
+void SignalValidator::update(float new_value) {
+    if (is_initializing) {
         initialize(new_value);
         return;
     }
@@ -27,77 +25,59 @@ void SignalValidator::update(float new_value)
     smooth_model.update(new_value);
 }
 
-void SignalValidator::initialize(float value)
-{
-    if (smooth_model.isInitializing())
-    {
+void SignalValidator::initialize(float value) {
+    if (smooth_model.isInitializing()) {
         smooth_model.initialize(value);
         return;
     }
 
-    if (window_model.isInitializing())
-    {
+    if (window_model.isInitializing()) {
         window_model.update(smooth_model.forecast() - value);
         smooth_model.update(value);
     }
 
-    if (!window_model.isInitializing())
-    {
+    if (!window_model.isInitializing()) {
         is_initializing = false;
     }
 }
 
-float SignalValidator::forecast()
-{
-    if (is_initializing)
-    {
+float SignalValidator::forecast() {
+    if (is_initializing) {
         return std::numeric_limits<float>::quiet_NaN();
     }
 
     return smooth_model.forecast();
 }
 
-int SignalValidator::validate(float value)
-{
-    if (is_initializing)
-    {
+int SignalValidator::validate(float value) {
+    if (is_initializing) {
         return INITIALIZING;
     }
 
     int status = VALID;
-
-    if (std::isnan(value))
-    {
+    if (std::isnan(value)) {
         status |= MISSING_VALUE;
         value = forecast();
     }
 
-    if (range_check(value)) { status |= OUT_OF_RANGE; }
-
-    if (continuity_check(value)) { status |= NOT_CONTINUOUS; }
-
-    if (stuck_check()) { status |= STUCK; }
-
-    if (noise_check()) { status |= NOISY; }
-
-    if (increase_check()) { status |= RAPID_INCREASE; }
-
-    if (decrease_check()) { status |= RAPID_DECREASE; }
+    range_check(value) ? status |= OUT_OF_RANGE : status;
+    continuity_check(value) ? status |= NOT_CONTINUOUS : status;
+    stuck_check() ? status |= STUCK : status;
+    noise_check() ? status |= NOISY : status;
+    increase_check() ? status |= RAPID_INCREASE : status;
+    decrease_check() ? status |= RAPID_DECREASE : status;
 
     return status;
 }
 
-bool SignalValidator::range_check(float value)
-{
+bool SignalValidator::range_check(float value) {
     return value > range_u_limit || value < range_l_limit;
 }
 
-bool SignalValidator::continuity_check(float value)
-{
+bool SignalValidator::continuity_check(float value) {
     float me = window_model.get_me();
     float sd = window_model.get_sd();
-    if (stuck_check())
-    {
+    if (stuck_check()) {
         sd = max_sd - min_sd;
     }
     float prediction = smooth_model.forecast();
@@ -105,22 +85,18 @@ bool SignalValidator::continuity_check(float value)
     return std::abs((me - difference)) / sd >= continuity_threshold;
 }
 
-bool SignalValidator::stuck_check()
-{
+bool SignalValidator::stuck_check() {
     return window_model.get_sd() < min_sd;
 }
 
-bool SignalValidator::noise_check()
-{
+bool SignalValidator::noise_check() {
     return window_model.get_sd() > max_sd;
 }
 
-bool SignalValidator::increase_check()
-{
+bool SignalValidator::increase_check() {
     return smooth_model.get_trend() > max_asc;
 }
 
-bool SignalValidator::decrease_check()
-{
+bool SignalValidator::decrease_check() {
     return smooth_model.get_trend() < max_des;
 }

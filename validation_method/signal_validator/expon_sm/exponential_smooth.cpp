@@ -6,22 +6,18 @@
 #include "exponential_smooth.h"
 
 HoltLinearModel::HoltLinearModel(float alpha, float beta)
-    : alpha(alpha), beta(beta), level(0.0), trend(0.0), initialized(false), init_count(0)
-{
-    int alpha_init_count = ceil((1 - alpha) * 10);
-    int beta_init_count = ceil((1 - beta) * 10);
+    : alpha(alpha), beta(beta), level(0.0), trend(0.0), initialized(false), init_count(0) {
+    int alpha_init_count = ceil((1 - alpha) * 10);                                              // Length of initilization phase depends
+    int beta_init_count = ceil((1 - beta) * 10);                                                // on the values of coefficients alpha and beta
     init_len = std::max({alpha_init_count, beta_init_count, 3});
 }
 
-void HoltLinearModel::initialize(float value)
-{
-    if (initialized)
-    {
+void HoltLinearModel::initialize(float value) {
+    if (initialized) {
         return;
     }
 
-    switch (init_count)
-    {
+    switch (init_count) {
     case 0:
         level = value;
         init_count++;
@@ -43,17 +39,13 @@ void HoltLinearModel::initialize(float value)
         break;
     }
 
-    if (init_count == init_len)
-    {
+    if (init_count == init_len) {
         initialized = true;
     }
 }
 
-// Update the model with a new observation and return predicted next value
-void HoltLinearModel::update(float new_value)
-{
-    if (!initialized)
-    {
+void HoltLinearModel::update(float new_value) {
+    if (!initialized) {
         std::cerr << "Model not initialized!" << std::endl;
         return;
     }
@@ -63,17 +55,14 @@ void HoltLinearModel::update(float new_value)
     trend = beta * (level - previous_level) + (1 - beta) * trend;
 }
 
-float HoltLinearModel::forecast()
-{
+float HoltLinearModel::forecast() {
     return level + trend;
 }
 
-bool HoltLinearModel::isInitializing()
-{
+bool HoltLinearModel::isInitializing() {
     return !initialized;
 }
 
-float HoltLinearModel::get_trend()
-{
+float HoltLinearModel::get_trend() {
     return trend;
 }

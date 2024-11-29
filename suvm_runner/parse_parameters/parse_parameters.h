@@ -5,18 +5,21 @@
 
 extern const std::string USAGE_EXPLANATION;
 
-enum ProgramMode {
+enum ProgramMode
+{
     TUNE,
     VALIDATE,
     TUNE_VALIDATE
 };
 
-enum OutputFormat {
+enum OutputFormat
+{
     LONG,
     SHORT
 };
 
-struct SUVMParameters {
+struct SUVMParameters
+{
     ProgramMode mode;
     int window_size;
     float tolerance;

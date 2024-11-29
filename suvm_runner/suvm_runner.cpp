@@ -25,8 +25,7 @@ void print_params(ValidatorParameters params) {
               << "Max Des: " << params.smooth_param.max_des << std::endl;
 }
 
-ValidatorParameters get_validator_params(SUVMParameters &params)
-{
+ValidatorParameters get_validator_params(SUVMParameters &params) {
     std::vector<float> tuning_data;
     ValidatorParameters validator_params;
     switch (params.mode) {
@@ -97,8 +96,7 @@ void simulate_validation(std::string output_file, std::vector<float> &test_data,
         validation_output << "timestamp,value,forecast,flags,failure_count" << std::endl;
     }
     int i = 0;
-    for (auto measurement : test_data)
-    {
+    for (auto measurement : test_data) {
         float forecast = validator.forecast();
         std::tuple<int, int> output = handler.validate(measurement);
         int status = std::get<0>(output);
