@@ -45,10 +45,6 @@ ValidatorParameters get_validator_params(SUVMParameters &params)
             break;
         }
 
-        if (params.mode == TUNE) {
-            generate_config(validator_params, params.config_file);
-        }
-
         if (params.mode == TUNE_VALIDATE) {
             print_params(validator_params);
         }
@@ -120,6 +116,7 @@ int main(int argc, char *argv[])
         SUVMParameters program_params = parse_args(argc, argv);
         ValidatorParameters validator_params = get_validator_params(program_params);
         if(program_params.mode == TUNE) {
+            generate_config(validator_params, program_params.config_file);
             return 0;
         }
 
