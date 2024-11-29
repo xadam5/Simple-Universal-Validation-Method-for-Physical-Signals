@@ -5,7 +5,7 @@
 
 extern const std::string USAGE_EXPLANATION;
 
-enum Mode {
+enum ProgramMode {
     TUNE,
     VALIDATE,
     TUNE_VALIDATE
@@ -17,7 +17,7 @@ enum OutputFormat {
 };
 
 struct SUVMParameters {
-    Mode mode;
+    ProgramMode mode;
     int window_size;
     float tolerance;
     float lower_limit;

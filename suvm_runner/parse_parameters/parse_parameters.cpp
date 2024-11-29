@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <limits>
+#include <regex>
 #include "parse_parameters.h"
 #include "../../validation_method/signal_validator/signal_validator.h"
 
@@ -22,15 +23,12 @@ const std::string USAGE_EXPLANATION = "usage: suvm_runner mode=tune t_file=<path
                                       "o_file: output filename without extension\n"
                                       "o_format: output format\n";
 
-// Helper to check if a required key exists
-void ensureKeyExists(const std::map<std::string, std::string> &params, const std::string &key) {
-    if (params.find(key) == params.end()) {
-        throw std::invalid_argument("Missing required argument: " + key);
-    }
-}
+const int DEFAULT_WINDOW_SIZE = 20;
+const float DEFAULT_TOLERANCE = 0.6;
+const int DEFAULT_INVALID_THRESHOLD = 10;
 
 // Helper to parse command-line arguments
-std::map<std::string, std::string> parseArguments(int argc, char *argv[]) {
+std::map<std::string, std::string> parse_arguments(int argc, char *argv[]) {
     std::map<std::string, std::string> arguments;
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -46,6 +44,91 @@ std::map<std::string, std::string> parseArguments(int argc, char *argv[]) {
     return arguments;
 }
 
+void ensure_key_exists(const std::map<std::string, std::string> &params, const std::string &key) {
+    if (params.find(key) == params.end()) {
+        throw std::invalid_argument("Missing required argument: " + key);
+    }
+}
+
+bool is_int(const std::string &s) {
+    return !s.empty() && std::all_of(s.begin(), s.end(), ::isdigit);
+}
+
+bool is_float(const std::string &s) {
+    static const std::regex number_regex(
+        R"(^\d+(\.\d+)?$)"
+    );
+    return std::regex_match(s, number_regex);
+}
+
+void validate_numeral_arguments(const std::map<std::string, std::string>& args) {
+    if (args.count("w_size") && !is_int(args.at("w_size"))) {
+        throw std::invalid_argument("Invalid window size: " + args.at("w_size"));
+    }
+
+    if (args.count("tol") && !is_float(args.at("tol"))) {
+        throw std::invalid_argument("Invalid tolerance: " + args.at("tol"));
+    }
+
+    if (args.count("l_limit") && !is_float(args.at("l_limit"))) {
+        throw std::invalid_argument("Invalid lower limit: " + args.at("l_limit"));
+    }
+
+    if (args.count("u_limit") && !is_float(args.at("u_limit"))) {
+        throw std::invalid_argument("Invalid upper limit: " + args.at("u_limit"));
+    }
+
+    if (args.count("i_thr") && !is_int(args.at("i_thr"))) {
+        throw std::invalid_argument("Invalid invalid threshold: " + args.at("i_thr"));
+    }
+}
+
+void validate_arguments(const std::map<std::string, std::string>& args) {
+    ensure_key_exists(args, "mode");
+    std::string mode = args.at("mode");
+
+    if (mode == "tune") {
+        ensure_key_exists(args, "t_file");
+        ensure_key_exists(args, "u_limit");
+        ensure_key_exists(args, "l_limit");
+        if (args.count("o_format")) {
+        throw std::invalid_argument("Output format is not valid for tune mode");
+        }
+    } else if (mode == "validate") {
+        ensure_key_exists(args, "v_file");
+        ensure_key_exists(args, "c_file");
+    } else if (mode == "tune_validate") {
+        ensure_key_exists(args, "t_file");
+        ensure_key_exists(args, "v_file");
+        ensure_key_exists(args, "u_limit");
+        ensure_key_exists(args, "l_limit");
+    } else {
+        throw std::invalid_argument("Invalid mode: " + mode);
+    }
+
+    if (args.count("o_format") && args.at("o_format") != "long" && args.at("o_format") != "short") {
+        throw std::invalid_argument("Invalid value for output format: " + args.at("o_format"));
+    }
+
+    validate_numeral_arguments(args);
+}
+
+SUVMParameters arguments_to_parameters(const std::map<std::string, std::string> args) {
+    SUVMParameters params;
+    params.mode = args.at("mode") == "tune" ? TUNE : args.at("mode") == "validate" ? VALIDATE : TUNE_VALIDATE;
+    params.window_size = args.count("w_size") ? std::stoi(args.at("w_size")) : DEFAULT_WINDOW_SIZE;
+    params.tolerance = args.count("tol") ? std::stof(args.at("tol")) : DEFAULT_TOLERANCE;
+    params.lower_limit = args.count("l_limit") ? std::stof(args.at("l_limit")) : std::numeric_limits<float>::quiet_NaN();
+    params.upper_limit = args.count("u_limit") ? std::stof(args.at("u_limit")) : std::numeric_limits<float>::quiet_NaN();
+    params.invalid_threshold = args.count("i_thr") ? std::stoi(args.at("i_thr")) : DEFAULT_INVALID_THRESHOLD;
+    params.tuning_file = args.count("t_file") ? args.at("t_file") : "";
+    params.validation_file = args.count("v_file") ? args.at("v_file") : "";
+    params.config_file = args.count("c_file") ? args.at("c_file") : "";
+    params.output_file = args.count("o_file") ? args.at("o_file") : "";
+    params.output_format = args.count("o_format") ? args.at("o_format") == "long" ? LONG : SHORT : LONG;
+    return params;
+}
+
 void parameters_validation(SUVMParameters params) {
     if (params.tolerance < 0) {
         throw std::invalid_argument("Tolerance must be non-negative");
@@ -53,6 +136,10 @@ void parameters_validation(SUVMParameters params) {
 
     if (params.window_size <= 3) {
         throw std::invalid_argument("Window size must at least 3");
+    }
+
+    if (params.invalid_threshold <= 0) {
+        throw std::invalid_argument("Invalid threshold must be positive");
     }
 
     if (params.mode != VALIDATE && params.upper_limit <= params.lower_limit) {
@@ -66,68 +153,9 @@ SUVMParameters parse_args(int argc, char *argv[]) {
     }
 
     // Parse arguments into a key-value map
-    auto args = parseArguments(argc, argv);
-
-    // Ensure mode is provided
-    ensureKeyExists(args, "mode");
-    std::string mode = args["mode"];
-
-    // Validate required arguments based on the mode
-    if (mode == "tune") {
-        ensureKeyExists(args, "t_file");
-        ensureKeyExists(args, "u_limit");
-        ensureKeyExists(args, "l_limit");
-    } else if (mode == "validate") {
-        ensureKeyExists(args, "v_file");
-        ensureKeyExists(args, "c_file");
-    } else if (mode == "tune_validate") {
-        ensureKeyExists(args, "t_file");
-        ensureKeyExists(args, "v_file");
-        ensureKeyExists(args, "u_limit");
-        ensureKeyExists(args, "l_limit");
-    } else {
-        throw std::invalid_argument("Invalid mode: " + mode);
-    }
-
-    // Optional arguments with defaults
-    std::string o_file = args.count("o_file") ? args["o_file"] : "validation_output";
-    std::string tolerance_s = args.count("tol") ? args["tol"] : "0.6"; // Default tolerance
-    std::string w_size_s = args.count("w_size") ? args["w_size"] : "20"; // Default window size
-    std::string i_threshold_s = args.count("i_thr") ? args["i_thr"] : "10"; // Default window size
-
-    std::string t_file = args.count("t_file") ? args["t_file"] : "";
-    std::string v_file = args.count("v_file") ? args["v_file"] : "";
-    std::string c_file = args.count("c_file") ? args["c_file"] : "";
-    int w_size = std::stoi(w_size_s);
-    int i_threshold = std::stoi(i_threshold_s);
-    float tolerance = std::stof(tolerance_s);
-    float l_limit = args.count("l_limit") ? std::stof(args["l_limit"]) : std::numeric_limits<float>::quiet_NaN();
-    float u_limit = args.count("u_limit") ? std::stof(args["u_limit"]) : std::numeric_limits<float>::quiet_NaN();
-    
-    Mode mode_enum = mode == "tune" ? TUNE : (mode == "validate" ? VALIDATE : TUNE_VALIDATE);
-    if (args.count("o_format") && args["o_format"] != "long" && args["o_format"] != "short") {
-        throw std::invalid_argument("Invalid value for output format: " + args["o_format"]);
-    }
-    if (args.count("o_format") && mode_enum == TUNE) {
-        throw std::invalid_argument("Output format is not valid for tune mode");
-    }
-    OutputFormat o_format = args.count("o_format") ? (args["o_format"] == "long" ? LONG : SHORT) : LONG;
-
-    // Print final configuration
-    SUVMParameters loaded_params({
-        mode_enum,
-        w_size,
-        tolerance,
-        l_limit,
-        u_limit,
-        i_threshold,
-        t_file,
-        v_file,
-        c_file,
-        o_file,
-        o_format
-    });
-
-    parameters_validation(loaded_params);
-    return loaded_params;
+    auto args = parse_arguments(argc, argv);
+    validate_arguments(args);
+    SUVMParameters params = arguments_to_parameters(args);
+    parameters_validation(params);
+    return params;
 }
