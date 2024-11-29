@@ -1,4 +1,3 @@
-// Specialization for float
 #include <limits>
 #include "inih/cpp/INIReader.h"
 #include <stdexcept>
@@ -7,7 +6,7 @@
 #include <iostream>
 #include <fstream>
 
-// General template for other types (if needed)
+// General template for getting parameters from the config file
 template <typename T>
 T get_param(const INIReader& reader, const std::string& section, const std::string& name, T default_value) {
     T value = reader.Get(section, name, default_value);
@@ -17,6 +16,7 @@ T get_param(const INIReader& reader, const std::string& section, const std::stri
     return value;
 }
 
+// Getting float parameters from the config file
 template <>
 float get_param(const INIReader& reader, const std::string& section, const std::string& name, float default_value) {
     float value = reader.GetReal(section, name, default_value);
@@ -26,7 +26,7 @@ float get_param(const INIReader& reader, const std::string& section, const std::
     return value;
 }
 
-// Specialization for int
+// Getting int parameters from the config file
 template <>
 int get_param(const INIReader& reader, const std::string& section, const std::string& name, int default_value) {
     int value = reader.GetInteger(section, name, default_value);
