@@ -11,21 +11,6 @@ ValidatorHandler::ValidatorHandler(SignalValidator &validator, float trend_coeff
 {}
 
 std::tuple<int, int> ValidatorHandler::validate(float value) {
-    if (std::isnan(value)) {
-        missing_value_count++;
-        update_failure_counter(true);
-        validator.update(validator.forecast());
-        int status = INVALID | MISSING_VALUE;
-        if (missing_value_count > missing_value_threshold)
-        {
-            is_lost = true;
-            status |= LOST;
-        }
-        return std::make_tuple(status, failure_count);
-    } else {
-        missing_value_count = 0;
-    }
-
     int status = validator.validate(value);
 
     if (status & INITIALIZING) {
@@ -33,6 +18,7 @@ std::tuple<int, int> ValidatorHandler::validate(float value) {
         return std::make_tuple(INITIALIZING, 0);
     }
 
+    missing_check(status);
     range_check(status);
     not_cont_check(status);
     stuck_check(status);
@@ -48,7 +34,7 @@ std::tuple<int, int> ValidatorHandler::validate(float value) {
         output |= LOST;
     }
 
-    if (status & NOT_CONTINUOUS) {
+    if (status & NOT_CONTINUOUS || status & MISSING_VALUE) {
         validator.update(validator.forecast());
     } else {
         validator.update(value);
