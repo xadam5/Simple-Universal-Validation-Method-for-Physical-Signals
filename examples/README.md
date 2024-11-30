@@ -1,7 +1,7 @@
 # Validation System Demonstration and Used Datasets 
 
 ## Example Scenarions
-The following examples demonstrate the functionality of the validation method using various datasets:
+The following examples demonstrate the functionality of the validation method using various datasets. In each folder, there are CSV files (and coresponding plots as PNG) containing data for tuning, testing and validation output form the validation method.  
 
 ### 1. Real Data: Pump System  
 - **Description**: Tuning and testing data are sourced from the [Water Pump System](#water-pump-system) sensor measuring motor frequency.  
@@ -58,10 +58,10 @@ The following examples demonstrate the functionality of the validation method us
 
 ---
 
-### 7. Spite  
+### 7. Outliers  
 - **Description**: Modified data from the [Water Pump System](#water-pump-system) sensor measuring motor phase voltage.  
 - **Scenario**:  
-  - Testing data includes a short series of significantly higher values (spike).  
+  - Testing data includes a short series of significantly higher values (outliers).  
 - **Outcome**: The validator detects the inconsistency using the `NOT_CONTINUOUS` flag and recovers seamlessly from the anomaly.  
 
 ---  
