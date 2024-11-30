@@ -83,7 +83,7 @@ suvm_runner mode=tune_validate t_file=<path/to/file.csv> v_file=<path/to/file.cs
 - **Usage**: Generated during the **tune** mode.  
 - **Notes**: Manual modifications are discouraged but possible with caution.  
 
-### Validation File  
+### Validation (Testing) File  
 - **Format**: CSV file with the same structure as the tuning file.  
 - **Content**: May include invalid values or anomalies only after the initialization phase. Its length depends on the parameters of the validator. The maximal length of the initialization phase is `window_size + 10`. 
 - **Initialization Phase**:  
