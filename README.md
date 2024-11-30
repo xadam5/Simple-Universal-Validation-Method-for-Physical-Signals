@@ -19,7 +19,7 @@ The validator can detect the following issues in sensor data:
 ---
 
 ## Installation and Build Instructions  
-The program can be built using the `make` command:  
+GCC C++ compiler (g++) is required. The program can be built using the `make` command:  
 ```bash
 make
 ```  
@@ -27,7 +27,6 @@ To remove the executable and object files, use:
 ```bash
 make clean
 ```
-
 ---
 
 ## Usage  
