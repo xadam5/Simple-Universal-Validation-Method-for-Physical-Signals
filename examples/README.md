@@ -81,5 +81,5 @@ For more detailed information, refer to the [Preprocessed Measurement Data READM
 ### [Water Pump System](https://www.kaggle.com/datasets/nphantawee/pump-sensor-data/data)
 This dataset provides data from sensors inside the Water Pump System. These sensors measure different aspects of the pump, like vibrations, motor phase voltage, pump impeller speed, etc. 
 
-### [US Weather History](https://data.world/fivethirtyeight/us-weather-history)
-This dataset contains temperature measurements across the US. Each file corresponds to US city ICAO airport codes. For more information, please see the [Readme file](https://data.world/fivethirtyeight/us-weather-history/workspace/file?filename=README.md) (for access, an account on https://data.world/ is required).
+### [US Weather History](https://github.com/fivethirtyeight/data/tree/master/us-weather-history)
+This dataset contains temperature measurements across the US. Each file corresponds to US city ICAO airport codes.
