@@ -1,7 +1,7 @@
 # Validation System Demonstration and Used Datasets 
 
-## Example Scenarions
-The following examples demonstrate the functionality of the validation method using various datasets. In each folder, there are CSV files (and coresponding plots as PNG) containing data for tuning, testing and validation output form the validation method.  
+## Example Scenarios
+The following examples demonstrate the functionality of the validation method using various datasets. In each folder, there are CSV files (and corresponding plots as PNG) containing data for tuning, testing, and validation output from the validation method.  
 
 ### 1. Real Data: Pump System  
 - **Description**: Tuning and testing data are sourced from the [Water Pump System](#water-pump-system) sensor measuring motor frequency.  
@@ -10,7 +10,7 @@ The following examples demonstrate the functionality of the validation method us
 ---
 
 ### 2. Real Data: Angle of Arrival (AoA) Sensor  
-- **Description**: Data originate from an [Angle of Arrival (AoA) sensor](#ubw-dual-antenna-aoa-sensor). The testing data includes a section with higher noise.  
+- **Description**: Data originate from an [Angle of Arrival (AoA) sensor](#uwb-dual-antenna-aoa-sensor). The testing data includes a section with higher noise.  
 - **Adjustment**: Increased the tolerance value to `0.8` (default is `0.6`) to handle the noise.  
 - **Use Case**: Useful when tuning data does not fully capture all potential conditions (e.g., varying noise levels).  
 
@@ -20,18 +20,18 @@ The following examples demonstrate the functionality of the validation method us
 #### Scenario 1  
 - **Description**:  
   - Data originate from the [Water Pump System](#water-pump-system) sensor measuring motor vibrations.  
-  - Tuning data are more static, while testing data include a valid frequency jump.  
+  - Tuning data are more static while testing data include a valid frequency jump.  
 - **Outcome**: The validator incorrectly flags the jump as invalid due to inappropriate tuning data.  
 
 #### Scenario 2  
 - **Description**:  
-  - Tuning data include a valid frequency jump.  
+  - Tuning data includes a valid frequency jump.  
   - Testing data demonstrate the validator's correct functionality with multiple frequency jumps.  
 
 ---
 
 ### 4. Missing Values  
-- **Description**: Modified data from the [AoA sensor](#ubw-dual-antenna-aoa-sensor) with several values removed from the testing dataset.  
+- **Description**: Modified data from the [AoA sensor](#uwb-dual-antenna-aoa-sensor) with several values removed from the testing dataset.  
 - **Outcome**:  
   - The validator successfully recovers from single or multiple missing values.  
   - For a longer sequence of missing values, the validator demonstrates its limitations in recovery.  
@@ -66,7 +66,7 @@ The following examples demonstrate the functionality of the validation method us
 
 ---  
 
-These scenarios showcase the validator's versatility and accuracy in handling a variety of data challenges. Proper tuning remains essential for achieving optimal results.
+These scenarios showcase the validator's versatility and accuracy in handling various data challenges. Proper tuning remains essential for achieving optimal results.
 
 ## Source of Datasets
 ### [UWB Dual Antenna AoA sensor](https://github.com/ETH-PBL/UWB_DualAntenna_AoA)
@@ -79,7 +79,7 @@ TDOA measures the difference in arrival times of a signal at two different anten
 For more detailed information, refer to the [Preprocessed Measurement Data README](https://github.com/ETH-PBL/UWB_DualAntenna_AoA/blob/main/Dataset/Preprocessed%20Measurement%20Data/README.md).
 
 ### [Water Pump System](https://www.kaggle.com/datasets/nphantawee/pump-sensor-data/data)
-This dataset provides data form sensors inside Water Pump System. These sensors measures different aspects of pump, like vibrations, motor phase voltage, pump impeller speed, etc. 
+This dataset provides data from sensors inside the Water Pump System. These sensors measure different aspects of the pump, like vibrations, motor phase voltage, pump impeller speed, etc. 
 
 ### [US Weather History](https://data.world/fivethirtyeight/us-weather-history)
-This dataset contains temperature measurements across the US. Each file corresponds to US city ICAO airport codes. For more information, please see the [Readme file](https://data.world/fivethirtyeight/us-weather-history/workspace/file?filename=README.md) (for access, account on https://data.world/ is required).
+This dataset contains temperature measurements across the US. Each file corresponds to US city ICAO airport codes. For more information, please see the [Readme file](https://data.world/fivethirtyeight/us-weather-history/workspace/file?filename=README.md) (for access, an account on https://data.world/ is required).
