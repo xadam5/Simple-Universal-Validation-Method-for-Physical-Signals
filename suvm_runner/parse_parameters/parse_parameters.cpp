@@ -51,12 +51,12 @@ void ensure_key_exists(const std::map<std::string, std::string> &params, const s
 }
 
 bool is_int(const std::string &s) {
-    return !s.empty() && std::all_of(s.begin(), s.end(), ::isdigit);
+    return !s.empty() && std::all_of(s.begin() + 1, s.end(), ::isdigit) && (s[0] == '-' || ::isdigit(s[0]));
 }
 
 bool is_float(const std::string &s) {
     static const std::regex number_regex(
-        R"(^\d+(\.\d+)?$)"
+        R"(^[-]?\d+(\.\d+)?$)"
     );
     return std::regex_match(s, number_regex);
 }
@@ -124,7 +124,7 @@ SUVMParameters arguments_to_parameters(const std::map<std::string, std::string> 
     params.tuning_file = args.count("t_file") ? args.at("t_file") : "";
     params.validation_file = args.count("v_file") ? args.at("v_file") : "";
     params.config_file = args.count("c_file") ? args.at("c_file") : "";
-    params.output_file = args.count("o_file") ? args.at("o_file") : "";
+    params.output_file = args.count("o_file") ? args.at("o_file") : params.mode == TUNE ? "tunned_params" : "validation_output";
     params.output_format = args.count("o_format") ? args.at("o_format") == "long" ? LONG : SHORT : LONG;
     return params;
 }
@@ -144,6 +144,10 @@ void parameters_validation(SUVMParameters params) {
 
     if (params.mode != VALIDATE && params.upper_limit <= params.lower_limit) {
             throw std::invalid_argument("Upper limit must be greater than lower limit");
+    }
+
+    if (params.tolerance < 0) {
+        throw std::invalid_argument("Tolerance cannot be negative");
     }
 }
 
