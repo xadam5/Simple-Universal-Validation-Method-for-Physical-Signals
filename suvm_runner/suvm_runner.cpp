@@ -35,7 +35,8 @@ ValidatorParameters get_validator_params(SUVMParameters &params) {
 
         default:
             tuning_data = readCSV(params.tuning_file);
-            if (tuning_data.size() < params.window_size + 20) {
+            int tuning_size = tuning_data.size(); 
+            if (tuning_size < params.window_size + 20) {
                 throw std::runtime_error("Error: Tuning file has to contain at least " + std::to_string(params.window_size + 20) + " values");  
             }
             TunnedParameters optimal_param = find_optimal_param(tuning_data, params.window_size, params.tolerance);
@@ -98,6 +99,7 @@ void simulate_validation(std::string output_file, std::vector<float> &test_data,
     } else {
         validation_output << "timestamp,value,forecast,flags,failure_count" << std::endl;
     }
+
     int i = 0;
     for (auto measurement : test_data) {
         float forecast = validator.forecast();
@@ -117,7 +119,7 @@ int main(int argc, char *argv[])
         SUVMParameters program_params = parse_args(argc, argv);
         ValidatorParameters validator_params = get_validator_params(program_params);
         if(program_params.mode == TUNE) {
-            generate_config(validator_params, program_params.config_file);
+            generate_config(validator_params, program_params.output_file);
             return 0;
         }
 
@@ -125,7 +127,8 @@ int main(int argc, char *argv[])
         ValidatorHandler handler(validator, validator_params.smooth_param.beta, validator_params.window_param.window_size, program_params.invalid_threshold);
 
         std::vector<float> test_data = readCSV(program_params.validation_file);
-        if (test_data.size() < program_params.window_size + 20) {
+        int test_size = test_data.size();
+        if (test_size < program_params.window_size + 20) {
             throw std::runtime_error("Error: Validation file has to contain at least " + std::to_string(program_params.window_size + 20) + " values");
         }
         simulate_validation(program_params.output_file, test_data, validator, handler, program_params.output_format);
