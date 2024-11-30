@@ -76,7 +76,7 @@ suvm_runner mode=tune_validate t_file=<path/to/file.csv> v_file=<path/to/file.cs
 ### Tuning File  
 - **Format**: CSV file with a header line.  
 - **Content**: Two columns: `timestamp` (or index) and `value`.  
-- **Notes**: The tuning file must contain only valid, anomaly-free data.  
+- **Notes**: The tuning file must contain only valid, anomaly-free data. It should cover the standard behavior of the sensor, its increasing and decreasing trends (if any), noise lever, etc. A minimal number of values is `window_size + 20`; however, much more is recommended.
 
 ### Configuration File  
 - **Format**: INI file.  
@@ -85,7 +85,7 @@ suvm_runner mode=tune_validate t_file=<path/to/file.csv> v_file=<path/to/file.cs
 
 ### Validation File  
 - **Format**: CSV file with the same structure as the tuning file.  
-- **Content**: May include invalid values or anomalies (after the initialization phase).  
+- **Content**: May include invalid values or anomalies only after the initialization phase. Its length depends on the parameters of the validator. The maximal length of the initialization phase is `window_size + 10`. 
 - **Initialization Phase**:  
   - Minimum duration: `window_size + 3`.  
   - Maximum duration: `window_size + 10`.  
@@ -129,3 +129,9 @@ suvm_runner mode=tune_validate t_file=data/tuning_data.csv v_file=data/validatio
 
 ---
 
+## Plot Validation Output
+For generating charts from validation outputs of this method, I used [Python script](plot_validation.py):
+```bash
+python3 plot_validation.py <path/csv_filename_without_extension>
+```
+Alternatively, online CSV file analyzers may be used, for instance, at https://chart-studio.plotly.com/create/#/.
