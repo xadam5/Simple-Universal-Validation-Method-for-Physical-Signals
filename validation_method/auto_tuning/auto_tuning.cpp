@@ -12,12 +12,12 @@ while (smooth_model.isInitializing())
 }
 
 // Mean Square Error (MSE)
-float calculate_mse(const std::vector<float> &actual, const std::vector<float> &predicted)
+float calculate_mse(const std::vector<float> &actual, const std::vector<float> &predicted, size_t offset)
 {
     float error_sum = 0.0;
     for (size_t i = 0; i < actual.size(); ++i)
     {
-        error_sum += (actual[i] - predicted[i]) * (actual[i] - predicted[i]);
+        error_sum += (actual[i + offset] - predicted[i]) * (actual[i + offset] - predicted[i]);
     }
     return error_sum / actual.size();
 }
@@ -43,12 +43,13 @@ void grid_search(const std::vector<float> &tuning_data, float &best_alpha, float
             size_t i = 0;
             initialize_HoltLinearModel(model, tuning_data, i);
 
+            size_t init_offset = i;
             predictions.clear();
             float max_asc = 0;
             float max_des = 0;
             get_predictions(model, tuning_data, predictions, max_asc, max_des, i);
 
-            float mse = calculate_mse(tuning_data, predictions);
+            float mse = calculate_mse(tuning_data, predictions, init_offset);
             if (mse < best_mse) {
                 best_mse = mse;
                 best_alpha = alpha;
@@ -102,11 +103,12 @@ void measure_window_params(SlidingWindow& window_model, HoltLinearModel& smooth_
     }
 }
 
-WindowParameters calculate_window_params(float max_sd, float min_sd, float max_sd_from_me, float min_st_from_me, float tolerance) {
+WindowParameters calculate_window_params(int window_size, float max_sd, float min_sd, float max_sd_from_me, float min_st_from_me, float tolerance) {
     WindowParameters window_params;
+    window_params.window_size = window_size;
     window_params.max_sd = max_sd + tolerance * (max_sd - min_sd) / 2;
     window_params.min_sd = std::max(float(0), min_sd - tolerance * (max_sd - min_sd) / 2);
-    window_params.threshold = max_sd_from_me + tolerance * (max_sd_from_me - min_st_from_me);
+    window_params.threshold = max_sd_from_me + tolerance * (max_sd_from_me - min_st_from_me) / 2;
     return window_params;
 }
 
@@ -127,7 +129,7 @@ WindowParameters tune_window_param(std::vector<float> &tuning_data, size_t windo
 
     measure_window_params(window_model, smooth_model, tuning_data, i, min_sd, max_sd, max_sd_from_me, min_st_from_me);
 
-    return calculate_window_params(max_sd, min_sd, max_sd_from_me, min_st_from_me, tolerance);
+    return calculate_window_params(window_size, max_sd, min_sd, max_sd_from_me, min_st_from_me, tolerance);
 }
 
 TunnedParameters find_optimal_param(std::vector<float> &tuning_data, size_t window_size, float tolerance)
