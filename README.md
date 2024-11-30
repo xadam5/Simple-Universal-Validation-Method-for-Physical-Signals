@@ -19,7 +19,7 @@ The validator can detect the following issues in sensor data:
 ---
 
 ## Installation and Build Instructions  
-GCC C++ compiler (g++) is required. The program can be built using the `make` command:  
+[GCC C++ compiler](https://gcc.gnu.org/) (g++) is required. The program can be built using the `make` command:  
 ```bash
 make
 ```  
