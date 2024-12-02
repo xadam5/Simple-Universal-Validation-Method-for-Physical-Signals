@@ -13,16 +13,16 @@
 #include "load_config/config_handler.h"
 
 void print_params(ValidatorParameters params) {
-    std::cout << "Alpha: " << params.smooth_param.alpha << " "
-              << "Beta: " << params.smooth_param.beta << std::endl;
-    std::cout << "Continuity threshold: " << params.window_param.threshold << std::endl;
-    std::cout << "Window Size: " << params.window_param.window_size << std::endl;
-    std::cout << "Min SD: " << params.window_param.min_sd << " "
-              << "Max SD: " << params.window_param.max_sd << std::endl;
+    std::cout << "Alpha: " << params.smoothing_params.alpha << " "
+              << "Beta: " << params.smoothing_params.beta << std::endl;
+    std::cout << "Continuity threshold: " << params.window_params.threshold << std::endl;
+    std::cout << "Window Size: " << params.window_params.window_size << std::endl;
+    std::cout << "Min SD: " << params.window_params.min_sd << " "
+              << "Max SD: " << params.window_params.max_sd << std::endl;
     std::cout << "Lower Limit: " << params.range_l_limit << " "
               << "Upper Limit: " << params.range_u_limit << std::endl;
-    std::cout << "Max Asc: " << params.smooth_param.max_asc << " "
-              << "Max Des: " << params.smooth_param.max_des << std::endl;
+    std::cout << "Max Asc: " << params.smoothing_params.max_asc << " "
+              << "Max Des: " << params.smoothing_params.max_des << std::endl;
 }
 
 ValidatorParameters get_validator_params(SUVMParameters &params) {
@@ -39,9 +39,9 @@ ValidatorParameters get_validator_params(SUVMParameters &params) {
             if (tuning_size < params.window_size + 20) {
                 throw std::runtime_error("Error: Tuning file has to contain at least " + std::to_string(params.window_size + 20) + " values");  
             }
-            TunnedParameters optimal_param = find_optimal_param(tuning_data, params.window_size, params.tolerance);
-            validator_params = {optimal_param.smooth_param,
-                                optimal_param.window_param,
+            TunnedParameters optimal_params = find_optimal_params(tuning_data, params.window_size, params.tolerance);
+            validator_params = {optimal_params.smoothing_params,
+                                optimal_params.window_params,
                                 params.lower_limit,
                                 params.upper_limit,
                                 params.invalid_threshold};
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
         }
 
         SignalValidator validator(validator_params);
-        ValidatorHandler handler(validator, validator_params.smooth_param.beta, validator_params.window_param.window_size, program_params.invalid_threshold);
+        ValidatorHandler handler(validator, validator_params.smoothing_params.beta, validator_params.window_params.window_size, program_params.invalid_threshold);
 
         std::vector<float> test_data = readCSV(program_params.validation_file);
         int test_size = test_data.size();

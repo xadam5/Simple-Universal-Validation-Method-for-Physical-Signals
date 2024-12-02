@@ -6,10 +6,10 @@
 
 struct TunnedParameters
 {
-    SmoothingParameters smooth_param;
-    WindowParameters window_param;
+    SmoothingParameters smoothing_params;
+    WindowParameters window_params;
 };
 
-TunnedParameters find_optimal_param(std::vector<float> &tuning_data, size_t wintdo_size, float tolerance);
+TunnedParameters find_optimal_params(std::vector<float> &tuning_data, size_t wintdo_size, float tolerance);
 
 #endif

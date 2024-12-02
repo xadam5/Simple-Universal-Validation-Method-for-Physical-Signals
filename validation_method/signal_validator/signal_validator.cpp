@@ -4,36 +4,36 @@
 #include <limits>
 #include "signal_validator.h"
 
-SignalValidator::SignalValidator(ValidatorParameters param)
-    : smooth_model(param.smooth_param.alpha, param.smooth_param.beta),
-      window_model(param.window_param.window_size),
-      range_l_limit(param.range_l_limit),
-      range_u_limit(param.range_u_limit),
-      continuity_threshold(param.window_param.threshold),
-      min_sd(param.window_param.min_sd),
-      max_sd(param.window_param.max_sd),
-      max_asc(param.smooth_param.max_asc),
-      max_des(param.smooth_param.max_des) {}
+SignalValidator::SignalValidator(ValidatorParameters params)
+    : smoothing_model(params.smoothing_params.alpha, params.smoothing_params.beta),
+      window_model(params.window_params.window_size),
+      range_l_limit(params.range_l_limit),
+      range_u_limit(params.range_u_limit),
+      continuity_threshold(params.window_params.threshold),
+      min_sd(params.window_params.min_sd),
+      max_sd(params.window_params.max_sd),
+      max_asc(params.smoothing_params.max_asc),
+      max_des(params.smoothing_params.max_des) {}
 
 void SignalValidator::update(float new_value) {
     if (is_initializing) {
         initialize(new_value);
         return;
     }
-    float prediction = smooth_model.forecast();
+    float prediction = smoothing_model.forecast();
     window_model.update(new_value - prediction);
-    smooth_model.update(new_value);
+    smoothing_model.update(new_value);
 }
 
 void SignalValidator::initialize(float value) {
-    if (smooth_model.isInitializing()) {
-        smooth_model.initialize(value);
+    if (smoothing_model.isInitializing()) {
+        smoothing_model.initialize(value);
         return;
     }
 
     if (window_model.isInitializing()) {
-        window_model.update(smooth_model.forecast() - value);
-        smooth_model.update(value);
+        window_model.update(smoothing_model.forecast() - value);
+        smoothing_model.update(value);
     }
 
     if (!window_model.isInitializing()) {
@@ -46,7 +46,7 @@ float SignalValidator::forecast() {
         return std::numeric_limits<float>::quiet_NaN();
     }
 
-    return smooth_model.forecast();
+    return smoothing_model.forecast();
 }
 
 int SignalValidator::validate(float value) {
@@ -80,7 +80,7 @@ bool SignalValidator::continuity_check(float value) {
     if (stuck_check()) {
         sd = max_sd - min_sd;
     }
-    float prediction = smooth_model.forecast();
+    float prediction = smoothing_model.forecast();
     float difference = value - prediction;
     return std::abs((me - difference)) / sd >= continuity_threshold;
 }
@@ -94,9 +94,9 @@ bool SignalValidator::noise_check() {
 }
 
 bool SignalValidator::increase_check() {
-    return smooth_model.get_trend() > max_asc;
+    return smoothing_model.get_trend() > max_asc;
 }
 
 bool SignalValidator::decrease_check() {
-    return smooth_model.get_trend() < max_des;
+    return smoothing_model.get_trend() < max_des;
 }

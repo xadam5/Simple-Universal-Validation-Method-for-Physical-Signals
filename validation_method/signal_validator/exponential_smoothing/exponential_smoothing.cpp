@@ -3,7 +3,7 @@
 #include <cmath>
 #include <limits>
 #include <algorithm>
-#include "exponential_smooth.h"
+#include "exponential_smoothing.h"
 
 HoltLinearModel::HoltLinearModel(float alpha, float beta)
     : alpha(alpha), beta(beta), level(0.0), trend(0.0), initialized(false), init_count(0) {

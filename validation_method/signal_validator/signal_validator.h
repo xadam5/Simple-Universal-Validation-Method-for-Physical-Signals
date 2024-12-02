@@ -2,8 +2,8 @@
 #define SIGNAL_VALIDATOR_H
 
 #include <vector>
-#include "expon_sm/exponential_smooth.h"
-#include "sliding_wind/sliding_window.h"
+#include "exponential_smoothing/exponential_smoothing.h"
+#include "sliding_window/sliding_window.h"
 
 struct SmoothingParameters
 {
@@ -23,8 +23,8 @@ struct WindowParameters
 
 struct ValidatorParameters
 {
-    SmoothingParameters smooth_param;
-    WindowParameters window_param;
+    SmoothingParameters smoothing_params;
+    WindowParameters window_params;
     float range_l_limit;
     float range_u_limit;
     int invalid_threshold;
@@ -46,13 +46,13 @@ enum ValidationStatus
 class SignalValidator
 {
 public:
-    SignalValidator(ValidatorParameters param);
+    SignalValidator(ValidatorParameters params);
     void update(float new_value);
     float forecast();
     int validate(float value);
 
 private:
-    HoltLinearModel smooth_model;
+    HoltLinearModel smoothing_model;
     SlidingWindow window_model;
     bool is_initializing = true;
     void initialize(float value);

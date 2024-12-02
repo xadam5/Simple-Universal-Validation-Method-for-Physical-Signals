@@ -12,8 +12,8 @@ SRCS_CPP = suvm_runner/suvm_runner.cpp \
 		validation_method/signal_validator/signal_validator.cpp \
 		validation_method/validator_handler/validator_handler.cpp \
 		validation_method/auto_tuning/auto_tuning.cpp \
-		validation_method/signal_validator/expon_sm/exponential_smooth.cpp \
-		validation_method/signal_validator/sliding_wind/sliding_window.cpp \
+		validation_method/signal_validator/exponential_smoothing/exponential_smoothing.cpp \
+		validation_method/signal_validator/sliding_window/sliding_window.cpp \
 		suvm_runner/csv_reader/csv_reader.cpp \
 		suvm_runner/parse_parameters/parse_parameters.cpp \
 		suvm_runner/load_config/config_handler.cpp \

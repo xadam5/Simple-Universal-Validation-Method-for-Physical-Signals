@@ -3,10 +3,10 @@
 #include <limits>
 #include "auto_tuning.h"
 
-void initialize_HoltLinearModel(HoltLinearModel &smooth_model, const std::vector<float> &tuning_data, size_t &i) {
-while (smooth_model.isInitializing())
+void initialize_HoltLinearModel(HoltLinearModel &smoothing_model, const std::vector<float> &tuning_data, size_t &i) {
+while (smoothing_model.isInitializing())
     {
-        smooth_model.initialize(tuning_data[i]);
+        smoothing_model.initialize(tuning_data[i]);
         i++;
     }
 }
@@ -61,7 +61,7 @@ void grid_search(const std::vector<float> &tuning_data, float &best_alpha, float
     }
 }
 
-SmoothingParameters tune_smooth_param(std::vector<float> &tuning_data, float tolerance)
+SmoothingParameters tune_smoothing_params(std::vector<float> &tuning_data, float tolerance)
 {
     float best_alpha, best_beta, best_max_asc, best_max_des;
     std::vector<float> predictions;
@@ -74,18 +74,18 @@ SmoothingParameters tune_smooth_param(std::vector<float> &tuning_data, float tol
     return SmoothingParameters({best_alpha, best_beta, best_max_asc, best_max_des});
 }
 
-void initialize_WindowModel(SlidingWindow& window_model, HoltLinearModel& smooth_model, const std::vector<float>& tuning_data, size_t& i) {
+void initialize_WindowModel(SlidingWindow& window_model, HoltLinearModel& smoothing_model, const std::vector<float>& tuning_data, size_t& i) {
     while (window_model.isInitializing()) {
-        float prediction = smooth_model.forecast();
+        float prediction = smoothing_model.forecast();
         window_model.update(tuning_data[i] - prediction);
-        smooth_model.update(tuning_data[i]);
+        smoothing_model.update(tuning_data[i]);
         i++;
     }
 }
 
-void measure_window_params(SlidingWindow& window_model, HoltLinearModel& smooth_model, const std::vector<float>& tuning_data, size_t& i, float& min_sd, float& max_sd, float& max_sd_from_me, float& min_st_from_me) {
+void measure_window_params(SlidingWindow& window_model, HoltLinearModel& smoothing_model, const std::vector<float>& tuning_data, size_t& i, float& min_sd, float& max_sd, float& max_sd_from_me, float& min_st_from_me) {
     for (; i < tuning_data.size(); i++) {
-        float prediction = smooth_model.forecast();
+        float prediction = smoothing_model.forecast();
         float real_value = tuning_data[i];
         float difference = real_value - prediction;
         window_model.update(difference);
@@ -99,7 +99,7 @@ void measure_window_params(SlidingWindow& window_model, HoltLinearModel& smooth_
         max_sd_from_me = std::max(max_sd_from_me, sd_from_me);
         min_st_from_me = std::min(min_st_from_me, sd_from_me);
 
-        smooth_model.update(real_value);
+        smoothing_model.update(real_value);
     }
 }
 
@@ -112,29 +112,29 @@ WindowParameters calculate_window_params(int window_size, float max_sd, float mi
     return window_params;
 }
 
-WindowParameters tune_window_param(std::vector<float> &tuning_data, size_t window_size, float tolerance, SmoothingParameters smooth_param)
+WindowParameters tune_window_params(std::vector<float> &tuning_data, size_t window_size, float tolerance, SmoothingParameters smoothing_params)
 {
     WindowParameters best_params({window_size, 0, std::numeric_limits<float>::max(), 0});
-    HoltLinearModel smooth_model = HoltLinearModel(smooth_param.alpha, smooth_param.beta);
+    HoltLinearModel smoothing_model = HoltLinearModel(smoothing_params.alpha, smoothing_params.beta);
     size_t i = 0;
-    initialize_HoltLinearModel(smooth_model, tuning_data, i);
+    initialize_HoltLinearModel(smoothing_model, tuning_data, i);
 
     SlidingWindow window_model = SlidingWindow(window_size);
-    initialize_WindowModel(window_model, smooth_model, tuning_data, i);
+    initialize_WindowModel(window_model, smoothing_model, tuning_data, i);
     
     float min_sd = std::numeric_limits<float>::max();
     float max_sd = 0;
     float max_sd_from_me = 0;
     float min_st_from_me = std::numeric_limits<float>::max();
 
-    measure_window_params(window_model, smooth_model, tuning_data, i, min_sd, max_sd, max_sd_from_me, min_st_from_me);
+    measure_window_params(window_model, smoothing_model, tuning_data, i, min_sd, max_sd, max_sd_from_me, min_st_from_me);
 
     return calculate_window_params(window_size, max_sd, min_sd, max_sd_from_me, min_st_from_me, tolerance);
 }
 
-TunnedParameters find_optimal_param(std::vector<float> &tuning_data, size_t window_size, float tolerance)
+TunnedParameters find_optimal_params(std::vector<float> &tuning_data, size_t window_size, float tolerance)
 {
-    SmoothingParameters smooth_model = tune_smooth_param(tuning_data, tolerance);
-    WindowParameters window_model = tune_window_param(tuning_data, window_size, tolerance, smooth_model);
-    return {smooth_model, window_model};
+    SmoothingParameters smoothing_model = tune_smoothing_params(tuning_data, tolerance);
+    WindowParameters window_model = tune_window_params(tuning_data, window_size, tolerance, smoothing_model);
+    return {smoothing_model, window_model};
 }

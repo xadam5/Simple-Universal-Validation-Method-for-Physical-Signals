@@ -1,5 +1,5 @@
-#ifndef EXPONENTIAL_SMOOTH_H
-#define EXPONENTIAL_SMOOTH_H
+#ifndef EXPONENTIAL_SMOOTHING_H
+#define EXPONENTIAL_SMOOTHING_H
 
 #include <vector>
 
