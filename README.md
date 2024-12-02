@@ -129,8 +129,27 @@ suvm_runner mode=tune_validate t_file=data/tuning_data.csv v_file=data/validatio
 ---
 
 ## Plot Validation Output
-For generating charts from validation outputs of this method, I used [Python script](plot_validation.py):
+For generating charts from validation outputs of this method, I recommend one of these approaches:
+
+### Static Plot Image
+For generating static plots (as PNG file), [Python script](plot_static.py) can be used.
 ```bash
 python3 plot_validation.py <path/csv_filename_without_extension>
 ```
+Required packages: Pandas, Matplotlib.
+```bash
+pip install pandas matplotlib
+```
+
+### Interactive Plot
+For generating interactive plots (as HTML file), [Python script](plot_interactive.py) can be used.
+```bash
+python3 plot_interactive.py <path/csv_filename_without_extension>
+```
+Required packages: Pandas, Plotly, Kaleido
+```bash
+pip install pandas plotly kaleido
+```
+
+### Online CSV tools
 Alternatively, online CSV file analyzers may be used, for instance, at https://chart-studio.plotly.com/create/#/.
