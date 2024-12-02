@@ -1,7 +1,7 @@
 # Validation System Demonstration and Used Datasets 
 
 ## Example Scenarios
-The following examples demonstrate the functionality of the validation method using various datasets. In each folder, there are CSV files (and corresponding plots as PNG) containing data for tuning, testing, and validation output from the validation method.  
+The following examples demonstrate the functionality of the validation method using various datasets. In each folder, there are CSV files (and corresponding plots) containing data for tuning, testing, and validation output from the validation method.  
 
 ### 1. Real Data: Pump System  
 - **Description**: Tuning and testing data are sourced from the [Water Pump System](#water-pump-system) sensor measuring motor frequency.  
