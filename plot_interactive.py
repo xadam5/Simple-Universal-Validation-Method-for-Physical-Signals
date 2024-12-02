@@ -48,11 +48,6 @@ fig.update_layout(
     hovermode="x unified"  # Show hover info for all lines at the same timestamp
 )
 
-# Show interactive plot
-# fig.show()
-
 # Save as interactive HTML file
 fig.write_html(file_path + ".html")
 
-# Save as static PNG image
-# fig.write_image("plot.png")  # Requires 'kaleido'
