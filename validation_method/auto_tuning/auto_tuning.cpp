@@ -68,8 +68,10 @@ SmoothingParameters tune_smoothing_params(std::vector<float> &tuning_data, float
 
     grid_search(tuning_data, best_alpha, best_beta, best_max_asc, best_max_des);
 
-    best_max_asc += (tolerance / 2) * (best_max_asc + (-best_max_des));
-    best_max_des -= (tolerance / 2) * (best_max_asc + (-best_max_des));
+    float change_range = best_max_asc - best_max_des;
+    float change_center = best_max_des + change_range / 2;
+    best_max_asc = change_center + (tolerance + 1) * (change_range / 2);
+    best_max_des = change_center - (tolerance + 1) * (change_range / 2);
 
     return SmoothingParameters({best_alpha, best_beta, best_max_asc, best_max_des});
 }
@@ -83,7 +85,7 @@ void initialize_WindowModel(SlidingWindow& window_model, HoltLinearModel& smooth
     }
 }
 
-void measure_window_params(SlidingWindow& window_model, HoltLinearModel& smoothing_model, const std::vector<float>& tuning_data, size_t& i, float& min_sd, float& max_sd, float& max_sd_from_me, float& min_st_from_me) {
+void measure_window_params(SlidingWindow& window_model, HoltLinearModel& smoothing_model, const std::vector<float>& tuning_data, size_t& i, float& min_sd, float& max_sd, float& max_sd_from_me, float& min_sd_from_me) {
     for (; i < tuning_data.size(); i++) {
         float prediction = smoothing_model.forecast();
         float real_value = tuning_data[i];
@@ -97,18 +99,22 @@ void measure_window_params(SlidingWindow& window_model, HoltLinearModel& smoothi
         float me = window_model.get_me();
         float sd_from_me = std::abs(me - difference) / sd;
         max_sd_from_me = std::max(max_sd_from_me, sd_from_me);
-        min_st_from_me = std::min(min_st_from_me, sd_from_me);
+        min_sd_from_me = std::min(min_sd_from_me, sd_from_me);
 
         smoothing_model.update(real_value);
     }
 }
 
-WindowParameters calculate_window_params(int window_size, float max_sd, float min_sd, float max_sd_from_me, float min_st_from_me, float tolerance) {
+WindowParameters calculate_window_params(int window_size, float max_sd, float min_sd, float max_sd_from_me, float min_sd_from_me, float tolerance) {
     WindowParameters window_params;
     window_params.window_size = window_size;
-    window_params.max_sd = max_sd + tolerance * (max_sd - min_sd) / 2;
-    window_params.min_sd = std::max(float(0), min_sd - tolerance * (max_sd - min_sd) / 2);
-    window_params.threshold = max_sd_from_me + tolerance * (max_sd_from_me - min_st_from_me) / 2;
+    float sd_range = max_sd - min_sd;
+    float sd_center = min_sd + sd_range / 2;
+    window_params.max_sd = sd_center + (1 + tolerance) * sd_range / 2 ;
+    window_params.min_sd = std::max(float(0), sd_center - (tolerance + 1) * sd_range / 2);
+    float sd_form_me_range = max_sd_from_me - min_sd_from_me;
+    float sd_from_me_center = min_sd_from_me + sd_form_me_range / 2;
+    window_params.threshold = sd_from_me_center + (tolerance + 1) * sd_form_me_range / 2;
     return window_params;
 }
 
@@ -125,11 +131,11 @@ WindowParameters tune_window_params(std::vector<float> &tuning_data, size_t wind
     float min_sd = std::numeric_limits<float>::max();
     float max_sd = 0;
     float max_sd_from_me = 0;
-    float min_st_from_me = std::numeric_limits<float>::max();
+    float min_sd_from_me = std::numeric_limits<float>::max();
 
-    measure_window_params(window_model, smoothing_model, tuning_data, i, min_sd, max_sd, max_sd_from_me, min_st_from_me);
+    measure_window_params(window_model, smoothing_model, tuning_data, i, min_sd, max_sd, max_sd_from_me, min_sd_from_me);
 
-    return calculate_window_params(window_size, max_sd, min_sd, max_sd_from_me, min_st_from_me, tolerance);
+    return calculate_window_params(window_size, max_sd, min_sd, max_sd_from_me, min_sd_from_me, tolerance);
 }
 
 TunnedParameters find_optimal_params(std::vector<float> &tuning_data, size_t window_size, float tolerance)
