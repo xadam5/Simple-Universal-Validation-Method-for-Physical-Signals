@@ -15,7 +15,7 @@
 void print_params(ValidatorParameters params) {
     std::cout << "Alpha: " << params.smoothing_params.alpha << " "
               << "Beta: " << params.smoothing_params.beta << std::endl;
-    std::cout << "Continuity threshold: " << params.window_params.threshold << std::endl;
+    std::cout << "Max Z-Score: " << params.window_params.max_z_score << std::endl;
     std::cout << "Window Size: " << params.window_params.window_size << std::endl;
     std::cout << "Min SD: " << params.window_params.min_sd << " "
               << "Max SD: " << params.window_params.max_sd << std::endl;

@@ -18,7 +18,7 @@ struct WindowParameters
     size_t window_size;
     float min_sd;
     float max_sd;
-    float threshold;
+    float max_z_score;
 };
 
 struct ValidatorParameters
@@ -59,7 +59,7 @@ private:
 
     float range_l_limit;
     float range_u_limit;
-    float continuity_threshold;
+    float max_z_score;
     float min_sd;
     float max_sd;
     float max_asc;

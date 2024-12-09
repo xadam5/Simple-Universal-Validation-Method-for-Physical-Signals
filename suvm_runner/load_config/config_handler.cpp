@@ -54,7 +54,7 @@ ValidatorParameters load_config(const std::string& config_file) {
     window_params.window_size = get_param(reader, "sliding_window", "window_size", static_cast<int>(NONE));
     window_params.min_sd = get_param(reader, "sliding_window", "min_sd", NONE);
     window_params.max_sd = get_param(reader, "sliding_window", "max_sd", NONE);
-    window_params.threshold = get_param(reader, "sliding_window", "continuity_threshold", NONE);
+    window_params.max_z_score = get_param(reader, "sliding_window", "max_z_score", NONE);
 
     ValidatorParameters params;
     params.smoothing_params = smoothing_params;
@@ -80,7 +80,7 @@ void generate_config(ValidatorParameters params, const std::string& config_file)
     ini_file << "window_size = " << params.window_params.window_size << std::endl;
     ini_file << "min_sd = " << params.window_params.min_sd << std::endl;
     ini_file << "max_sd = " << params.window_params.max_sd << std::endl;
-    ini_file << "continuity_threshold = " << params.window_params.threshold << std::endl;
+    ini_file << "max_z_score = " << params.window_params.max_z_score << std::endl;
     ini_file << std::endl;
 
     ini_file << "[range]" << std::endl;

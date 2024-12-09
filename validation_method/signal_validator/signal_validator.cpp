@@ -9,7 +9,7 @@ SignalValidator::SignalValidator(ValidatorParameters params)
       window_model(params.window_params.window_size),
       range_l_limit(params.range_l_limit),
       range_u_limit(params.range_u_limit),
-      continuity_threshold(params.window_params.threshold),
+      max_z_score(params.window_params.max_z_score),
       min_sd(params.window_params.min_sd),
       max_sd(params.window_params.max_sd),
       max_asc(params.smoothing_params.max_asc),
@@ -82,7 +82,7 @@ bool SignalValidator::continuity_check(float value) {
     }
     float prediction = smoothing_model.forecast();
     float difference = value - prediction;
-    return std::abs((me - difference)) / sd >= continuity_threshold;
+    return std::abs((me - difference)) / sd >= max_z_score;
 }
 
 bool SignalValidator::stuck_check() {
