@@ -24,7 +24,7 @@ const std::string USAGE_EXPLANATION = "usage: suvm_runner mode=tune t_file=<path
                                       "o_format: output format\n";
 
 const int DEFAULT_WINDOW_SIZE = 20;
-const float DEFAULT_TOLERANCE = 1.2;
+const float DEFAULT_TOLERANCE = 0.75;
 const int DEFAULT_INVALID_THRESHOLD = 10;
 
 // Helper to parse command-line arguments
@@ -124,7 +124,7 @@ SUVMParameters arguments_to_parameters(const std::map<std::string, std::string> 
     params.tuning_file = args.count("t_file") ? args.at("t_file") : "";
     params.validation_file = args.count("v_file") ? args.at("v_file") : "";
     params.config_file = args.count("c_file") ? args.at("c_file") : "";
-    params.output_file = args.count("o_file") ? args.at("o_file") : params.mode == TUNE ? "tunned_params" : "validation_output";
+    params.output_file = args.count("o_file") ? args.at("o_file") : params.mode == TUNE ? "tuned_params" : "validation_output";
     params.output_format = args.count("o_format") ? args.at("o_format") == "long" ? LONG : SHORT : LONG;
     return params;
 }
