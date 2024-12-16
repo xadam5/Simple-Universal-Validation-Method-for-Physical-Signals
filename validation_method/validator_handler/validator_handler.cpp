@@ -34,7 +34,7 @@ std::tuple<int, int> ValidatorHandler::validate(float value) {
         output |= LOST;
     }
 
-    if (status & NOT_CONTINUOUS || status & MISSING_VALUE) {
+    if (!is_lost && (status & NOT_CONTINUOUS || status & MISSING_VALUE)) {
         validator.update(validator.forecast());
     } else {
         validator.update(value);
