@@ -37,8 +37,8 @@ void get_predictions(HoltLinearModel &model, const std::vector<float> &tuning_da
 void grid_search(const std::vector<float> &tuning_data, float &best_alpha, float &best_beta, float &best_max_asc, float &best_max_des) {
     std::vector<float> predictions;
     float best_mse = std::numeric_limits<float>::max();
-    for (float alpha = 0.1; alpha <= 0.9; alpha += 0.05) {
-        for (float beta = 0.1; beta <= 0.9; beta += 0.05) {
+    for (float alpha = 0.1; alpha <= 0.7; alpha += 0.05) {
+        for (float beta = 0.1; beta <= 0.7; beta += 0.05) {
             HoltLinearModel model(alpha, beta);
             size_t i = 0;
             initialize_HoltLinearModel(model, tuning_data, i);
