@@ -3,7 +3,7 @@
 ## Example Scenarios
 The following examples demonstrate the functionality of the validation method using various datasets. In each folder, there are CSV files (and corresponding plots) containing data for tuning, testing, and validation output from the validation method.  
 
-### 1. Real Data: Pump System  
+### 1. Real Data: Bearing Monitoring System  
 - **Description**: Tuning and testing data are sourced from the [Water Pump System](#water-pump-system) sensor measuring motor frequency.  
 - **Outcome**: The validator detects outliers using the `NOT_CONTINUOUS` flag and remains unaffected by these anomalies.  
 
@@ -78,8 +78,8 @@ TDOA measures the difference in arrival times of a signal at two different anten
 
 For more detailed information, refer to the [Preprocessed Measurement Data README](https://github.com/ETH-PBL/UWB_DualAntenna_AoA/blob/main/Dataset/Preprocessed%20Measurement%20Data/README.md).
 
-### [Water Pump System](https://www.kaggle.com/datasets/nphantawee/pump-sensor-data/data)
-This dataset provides data from sensors inside the Water Pump System. These sensors measure different aspects of the pump, like vibrations, motor phase voltage, pump impeller speed, etc. 
+### [Bearing Monitoring System](https://www.kaggle.com/datasets/isaienkov/bearing-classification)
+This dataset focuses on integrating AutoML solutions for bearing condition monitoring. Signals were collected to determine if bearings are whole or defective. For the experiments, two bearings were installed on a shaft. The rotation speed varied from 0 to 1500 rpm, held for 10 seconds, and then decreased to 250 rpm. A DC motor drove the shaft through a coupling, and a radial load of 3.5 kg was applied using a balanced weight. GY-61 ADXL335 accelerometers were mounted on the bearing housing to record signals along the x, y, and z axes.
 
 ### [US Weather History](https://github.com/fivethirtyeight/data/tree/master/us-weather-history)
 This dataset contains temperature measurements across the US. Each file corresponds to US city ICAO airport codes.
