@@ -59,7 +59,7 @@ suvm_runner mode=tune_validate t_file=<path/to/file.csv> v_file=<path/to/file.cs
 ### Parameters  
 - **`mode`**: Mode of operation (`tune`, `validate`, `tune_validate`).  
 - **`w_size`**: Sliding window size (default: 20).  
-- **`tol`**: Tolerance for measured thresholds (default: 0.6).  
+- **`tol`**: Tolerance for measured thresholds (default: 0.75).  
 - **`i_thr`**: Base of threshold for consecutive invalid measurements (default: 10).  
 - **`l_limit`**: Lower limit of valid values.  
 - **`u_limit`**: Upper limit of valid values.  
