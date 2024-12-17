@@ -4,29 +4,24 @@
 The following examples demonstrate the functionality of the validation method using various datasets. In each folder, there are CSV files (and corresponding plots) containing data for tuning, testing, and validation output from the validation method.  
 
 ### 1. Real Data: Bearing Monitoring System  
-- **Description**: Tuning and testing data are sourced from the [Water Pump System](#water-pump-system) sensor measuring motor frequency.  
+- **Description**: Tuning and testing data are sourced from the [Bearing Monitoring System](#bearing-monitoring-system) sensors measuring different axes.
+- **Adjustment**: Increased the tolerance value to `0.8` (default is `0.75`) to handle the noise.  
 - **Outcome**: The validator detects outliers using the `NOT_CONTINUOUS` flag and remains unaffected by these anomalies.  
 
 ---
 
 ### 2. Real Data: Angle of Arrival (AoA) Sensor  
 - **Description**: Data originate from an [Angle of Arrival (AoA) sensor](#uwb-dual-antenna-aoa-sensor). The testing data includes a section with higher noise.  
-- **Adjustment**: Increased the tolerance value to `0.8` (default is `0.6`) to handle the noise.  
+- **Adjustment**: Increased the tolerance value to `0.8` (default is `0.75`) to handle the noise.  
 - **Use Case**: Useful when tuning data does not fully capture all potential conditions (e.g., varying noise levels).  
 
 ---
 
 ### 3. Incorrect Tuning  
-#### Scenario 1  
 - **Description**:  
-  - Data originate from the [Water Pump System](#water-pump-system) sensor measuring motor vibrations.  
-  - Tuning data are more static while testing data include a valid frequency jump.  
-- **Outcome**: The validator incorrectly flags the jump as invalid due to inappropriate tuning data.  
-
-#### Scenario 2  
-- **Description**:  
-  - Tuning data includes a valid frequency jump.  
-  - Testing data demonstrate the validator's correct functionality with multiple frequency jumps.  
+  - Data originate from the [Bearing Monitoring System](#bearing-monitoring-system) sensor measuring different axes.  
+  - Tuning data are more static while testing data include a valid trend change.  
+- **Outcome**: The validator incorrectly flags the trend change as invalid due to inappropriate tuning data.
 
 ---
 
@@ -50,18 +45,18 @@ The following examples demonstrate the functionality of the validation method us
 ---
 
 ### 6. Stuck Data  
-- **Description**: Modified [temperature measurement data from the US](#us-weather-history).  
+- **Description**: [temperature measurement data from the US](#us-weather-history).  
 - **Scenario**:  
   - Tuning data: Contains valid readings.  
-  - Testing data: Simulates a stuck sensor with a small amount of noise.  
+  - Testing data: Contains valid readings followed by a simulated stuck sensor with a small amount of noise.  
 - **Outcome**: The validator identifies the sensor as stuck using the `STUCK` flag.  
 
 ---
 
 ### 7. Outliers  
-- **Description**: Modified data from the [Water Pump System](#water-pump-system) sensor measuring motor phase voltage.  
+- **Description**: Modified data from the [Bearing Monitoring System](#bearing-monitoring-system) sensor.  
 - **Scenario**:  
-  - Testing data includes a short series of significantly higher values (outliers).  
+  - Testing data includes a short series of significantly higher/lower values (outliers).  
 - **Outcome**: The validator detects the inconsistency using the `NOT_CONTINUOUS` flag and recovers seamlessly from the anomaly.  
 
 ---  
