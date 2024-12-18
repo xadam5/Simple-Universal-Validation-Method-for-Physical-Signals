@@ -23,9 +23,6 @@ const std::string USAGE_EXPLANATION = "usage: suvm_runner mode=tune t_file=<path
                                       "o_file: output filename without extension\n"
                                       "o_format: output format\n";
 
-const int DEFAULT_WINDOW_SIZE = 20;
-const float DEFAULT_TOLERANCE = 0.75;
-const int DEFAULT_INVALID_THRESHOLD = 10;
 
 // Helper to parse command-line arguments
 std::map<std::string, std::string> parse_arguments(int argc, char *argv[]) {

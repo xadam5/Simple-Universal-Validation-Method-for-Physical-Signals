@@ -5,6 +5,10 @@
 
 extern const std::string USAGE_EXPLANATION;
 
+const int DEFAULT_WINDOW_SIZE = 20;
+const float DEFAULT_TOLERANCE = 0.75;
+const int DEFAULT_INVALID_THRESHOLD = 10;
+
 enum ProgramMode
 {
     TUNE,
