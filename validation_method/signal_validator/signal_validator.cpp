@@ -26,17 +26,17 @@ void SignalValidator::update(float new_value) {
 }
 
 void SignalValidator::initialize(float value) {
-    if (smoothing_model.isInitializing()) {
+    if (smoothing_model.is_initializing()) {
         smoothing_model.initialize(value);
         return;
     }
 
-    if (window_model.isInitializing()) {
+    if (window_model.is_initializing()) {
         window_model.update(smoothing_model.forecast() - value);
         smoothing_model.update(value);
     }
 
-    if (!window_model.isInitializing()) {
+    if (!window_model.is_initializing()) {
         is_initializing = false;
     }
 }

@@ -41,6 +41,6 @@ void SlidingWindow::update(float value) {
     update_sd();
 }
 
-bool SlidingWindow::isInitializing() {
+bool SlidingWindow::is_initializing() {
     return window.size() != window_size;
 }

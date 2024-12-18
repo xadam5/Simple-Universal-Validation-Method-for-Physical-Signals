@@ -4,7 +4,7 @@
 #include "auto_tuning.h"
 
 void initialize_HoltLinearModel(HoltLinearModel &smoothing_model, const std::vector<float> &tuning_data, size_t &i) {
-while (smoothing_model.isInitializing())
+while (smoothing_model.is_initializing())
     {
         smoothing_model.initialize(tuning_data[i]);
         i++;
@@ -77,7 +77,7 @@ SmoothingParameters tune_smoothing_params(std::vector<float> &tuning_data, float
 }
 
 void initialize_WindowModel(SlidingWindow& window_model, HoltLinearModel& smoothing_model, const std::vector<float>& tuning_data, size_t& i) {
-    while (window_model.isInitializing()) {
+    while (window_model.is_initializing()) {
         float prediction = smoothing_model.forecast();
         window_model.update(tuning_data[i] - prediction);
         smoothing_model.update(tuning_data[i]);

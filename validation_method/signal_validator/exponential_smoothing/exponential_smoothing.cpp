@@ -59,7 +59,7 @@ float HoltLinearModel::forecast() {
     return level + trend;
 }
 
-bool HoltLinearModel::isInitializing() {
+bool HoltLinearModel::is_initializing() {
     return !initialized;
 }
 
